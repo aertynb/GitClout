@@ -18,6 +18,8 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<node.version>v20.8.0</node.version>
+		<yarn.version>v1.22.19</yarn.version>
 	</properties>
 
 	<dependencies>
@@ -56,41 +58,61 @@
 				<artifactId>frontend-maven-plugin</artifactId>
 				<version>1.14.0</version>
 				<configuration>
-					<nodeVersion>v20.8.0</nodeVersion>
-					<npmVersion>10.1.0</npmVersion>
-					<workingDirectory>src/ngapp/</workingDirectory>
+					<nodeVersion>${node.version}</nodeVersion>
+					<yarnVersion>${yarn.version}</yarnVersion>
+					<workingDirectory>src/reactapp/</workingDirectory>
+					<installDirectory>target/classes/</installDirectory>
 				</configuration>
 				<executions>
 					<execution>
-						<id>install node and npm</id>
+						<id>install-frontend-tools</id>
 						<goals>
-							<goal>install-node-and-npm</goal>
+							<goal>install-node-and-yarn</goal>
 						</goals>
 					</execution>
+
 					<execution>
-						<id>npm install</id>
+						<id>yarn-install</id>
 						<goals>
-							<goal>npm</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>npm run build-prod</id>
-						<goals>
-							<goal>npm</goal>
+							<goal>yarn</goal>
 						</goals>
 						<configuration>
-							<arguments>run build</arguments>
+							<arguments>install</arguments>
 						</configuration>
 					</execution>
+
 					<execution>
-						<id>prod</id>
+						<id>build-frontend</id>
 						<goals>
-							<goal>npm</goal>
+							<goal>yarn</goal>
 						</goals>
+						<phase>prepare-package</phase>
 						<configuration>
-							<arguments>run-script build</arguments>
+							<arguments>build</arguments>
 						</configuration>
-						<phase>generate-resources</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>position-react-build</id>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<configuration>
+							<outputDirectory>target/classes/static/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/reactapp/build</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
