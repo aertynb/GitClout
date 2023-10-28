@@ -1,21 +1,25 @@
 package fr.uge.gitclout;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import fr.uge.gitclout.entity.Commiter;
+import fr.uge.gitclout.gitclone.Repository;
+import fr.uge.gitclout.service.CommiterService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.sql.DataSource;
+import java.io.File;
 
 @SpringBootApplication
 @RestController
 public class GitcloutApplication {
+
+	private final static Logger log = LoggerFactory.getLogger(GitcloutApplication.class);
+	private final Repository repo = new Repository("https://github.com/localsend/localsend.git", new File("ressources/repo"));
 
 	public static void main(String[] args) {
 		SpringApplication.run(GitcloutApplication.class, args);
@@ -27,15 +31,16 @@ public class GitcloutApplication {
 	}
 
 	@GetMapping("/test")	// localhost::8080/test 			affiche Test 1 2 1 2
-	public long test(CommiterRepository commiterRepository) {
-		return 2;
+	public String test(CommiterService commiterService) {
+		return "test";
 	}
 
 	@Bean
-	public DataSource dataSource() {
-		DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-		dataSourceBuilder.driverClassName("org.sqlite.JDBC");
-		dataSourceBuilder.url("jdbc:sqlite:database.db");
-		return dataSourceBuilder.build();
+	public CommandLineRunner demo(CommiterService commiterService) {
+		return (args) -> {
+			var commit = commiterService.addCommiter(new Commiter("Dave", "Masterclass"));
+			log.info(commit.toString());
+		};
 	}
+
 }

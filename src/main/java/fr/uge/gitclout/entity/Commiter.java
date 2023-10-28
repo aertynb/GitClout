@@ -1,6 +1,8 @@
-package fr.uge.gitclout;
+package fr.uge.gitclout.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.util.Objects;
@@ -9,6 +11,7 @@ import java.util.Objects;
 public class Commiter {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     private String firstName;
@@ -16,10 +19,9 @@ public class Commiter {
 
     protected Commiter() {}
 
-    public Commiter(long id, String firstName, String lastName) {
+    public Commiter(String firstName, String lastName) {
         Objects.requireNonNull(firstName);
         Objects.requireNonNull(lastName);
-        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
     }
