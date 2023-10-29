@@ -6,16 +6,15 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Repository {
+public class Cloner {
     final private Git git;
     final private LogCommand log;
 
-    public Repository(String URI, File directory) {
+    public Cloner(String URI, File directory) {
         Objects.requireNonNull(URI);
         Objects.requireNonNull(directory);
         if(directory.exists()) {
@@ -27,7 +26,7 @@ public class Repository {
 
     private void rmFiles(File directory) {
         Objects.requireNonNull(directory);
-        for (var subfile: directory.listFiles()) {
+        for (var subfile: Objects.requireNonNull(directory.listFiles())) {
             if (subfile.isDirectory()) {
                 rmFiles(subfile);
             }
@@ -46,12 +45,6 @@ public class Repository {
                 list.add(person);
             }
         }
-        /*commits.forEach(x -> {
-            var person = x.getAuthorIdent().getName();
-            if (!list.contains(person)) {
-                list.add(person);
-            }
-        });*/
         return list;
     }
 
