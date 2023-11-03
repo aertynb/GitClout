@@ -9,7 +9,4 @@ import java.util.List;
 
 @Repository
 public interface CommiterRepository extends JpaRepository<Commiter, Long> {
-    List<Commiter> findByLastName(String lastName);
-
-    Commiter findById(long id);
 }
