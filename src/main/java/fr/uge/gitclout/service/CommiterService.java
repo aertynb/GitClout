@@ -26,6 +26,10 @@ public class CommiterService {
         return commiterRepository.findAll();
     }
 
+    public Commiter findById(Long id) {
+        return  commiterRepository.findById(id).orElseThrow(RuntimeException::new);
+    }
+
     public void addAllCommiter(Git git) throws GitAPIException {
         for (var commit : git.log().call()) {
             var commiter = new Commiter(commit.getAuthorIdent().getName(), commit.getAuthorIdent().getEmailAddress());

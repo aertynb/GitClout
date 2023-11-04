@@ -5,13 +5,14 @@ import fr.uge.gitclout.service.CommiterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/commiter") // requête POST
+@RequestMapping("api/commiters") // requête POST
 public class CommiterController {
     private final CommiterService commiterService;
 
@@ -20,9 +21,14 @@ public class CommiterController {
         this.commiterService = commiterService;
     }
 
+    @GetMapping
+    public List<Commiter> getCommiters() {
+        return commiterService.findAll();
+    }
+
     @PostMapping
-    public ResponseEntity<Commiter> addCommiter(@RequestBody Commiter commiter) {
+    public ResponseEntity<Commiter> addCommiter(@RequestBody Commiter commiter) throws URISyntaxException {
         Commiter newCommiter = commiterService.addCommiter(commiter);
-        return new ResponseEntity<>(newCommiter, HttpStatus.CREATED);
+        return ResponseEntity.created(new URI("/api/commiters/" + newCommiter.getId())).body(newCommiter);
     }
 }

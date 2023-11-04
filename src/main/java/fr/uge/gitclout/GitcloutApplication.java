@@ -54,9 +54,9 @@ public class GitcloutApplication {
 			try (var git = repo.initRepository("https://github.com/localsend/localsend.git")) {
 				commiterService.addAllCommiter(git);
 			}
-			for (var commiter : commiterService.findAll()) {
+			/*for (var commiter : commiterService.findAll()) {
 				log.info(commiter.toString());
-			}
+			}*/
 		};
 	}
 
