@@ -7,7 +7,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CommiterService {
@@ -26,14 +28,14 @@ public class CommiterService {
         return commiterRepository.findAll();
     }
 
-    public Commiter findById(Long id) {
-        return  commiterRepository.findById(id).orElseThrow(RuntimeException::new);
-    }
 
     public void addAllCommiter(Git git) throws GitAPIException {
+        Objects.requireNonNull(git);
+        var set = new HashSet<Commiter>();
         for (var commit : git.log().call()) {
             var commiter = new Commiter(commit.getAuthorIdent().getName(), commit.getAuthorIdent().getEmailAddress());
-            commiterRepository.save(commiter);
+            set.add(commiter);
         }
+        commiterRepository.saveAll(set);
     }
 }

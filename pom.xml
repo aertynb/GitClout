@@ -10,7 +10,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>fr.uge</groupId>
+	<groupId>fr.uge.gitclout</groupId>
 	<artifactId>gitclout</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gitclout</name>
@@ -142,7 +142,6 @@
 							<resources>
 								<resource>
 									<directory>src/reactapp/build</directory>
-									<filtering>false</filtering>
 								</resource>
 							</resources>
 						</configuration>
