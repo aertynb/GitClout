@@ -22,7 +22,7 @@ public class Cloner {
                 .call();
     }
 
-    private void rmFiles(File directory) {
+    public void rmFiles(File directory) {
         Objects.requireNonNull(directory);
         for (var subfile : Objects.requireNonNull(directory.listFiles())) {
             if (subfile.isDirectory()) {

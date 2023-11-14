@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Button, ButtonGroup, Container, Table } from 'reactstrap';
+import { Container, Table } from 'reactstrap';
 import NavBar from './NavBar';
-import { Link } from 'react-router-dom';
 
 class CommitertList extends Component {
 

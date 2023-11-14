@@ -13,6 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.net.URI;
 import java.util.Objects;
 
 
@@ -42,6 +44,7 @@ public class GitcloutApplication {
 				commiterService.addAllCommiter(git);
 				//commitService.addAllCommit(git);
 			}
+			repo.rmFiles(new File("ressources/repo"));
 		};
 	}
 
