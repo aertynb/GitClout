@@ -1,6 +1,7 @@
 HELP.md
-ressources/repo/
+ressources/
 target/
+database/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

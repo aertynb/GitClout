@@ -33,7 +33,7 @@ class CommitertList extends Component {
             <div>
                 <NavBar/>
                 <Container fluid>
-                    <h3>Clients</h3>
+                    <h3>Commiters</h3>
                     <Table className="mt-4">
                         <thead>
                         <tr>

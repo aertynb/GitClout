@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import CommiterList from './CommiterList';
 import Home from './Home';
 
-
 class App extends Component {
   render() {
     return (
