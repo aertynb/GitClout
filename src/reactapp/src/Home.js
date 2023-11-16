@@ -10,6 +10,7 @@ class Home extends Component {
             <div>
                 <NavBar/>
                 <Container fluid>
+                    <Button color="link"><Link to="/clone-repo">Clone Repository</Link></Button>
                     <Button color="link"><Link to="/commiters">Commiters</Link></Button>
                 </Container>
             </div>
