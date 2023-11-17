@@ -5,6 +5,7 @@ import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.repository.CommitRepository;
 import fr.uge.gitclout.repository.CommiterRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ import java.util.Objects;
 @Service
 public class CommitService {
 
-    @Autowired
     private CommitRepository commitRepository;
 
-    @Autowired
     private CommiterRepository commiterRepository;
+
+    public CommitService(@NotNull CommitRepository commitRepository, @NotNull CommiterRepository commiterRepository) {
+        this.commitRepository = commitRepository;
+        this.commiterRepository = commiterRepository;
+    }
 
     public List<Commit> findAll() {
         return commitRepository.findAll();

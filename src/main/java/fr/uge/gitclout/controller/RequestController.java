@@ -5,6 +5,7 @@ import fr.uge.gitclout.gitclone.Cloner;
 import fr.uge.gitclout.service.CommitService;
 import fr.uge.gitclout.service.CommiterService;
 import fr.uge.gitclout.service.RepoService;
+import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,7 @@ public class RequestController {
     private final CommitService commitService;
     private final RepoService repoService;
 
-    @Autowired
-    public RequestController(CommiterService commiterService, CommitService commitService, RepoService repoService) {
+    public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService) {
         Objects.requireNonNull(commiterService);
         Objects.requireNonNull(commitService);
         Objects.requireNonNull(repoService);

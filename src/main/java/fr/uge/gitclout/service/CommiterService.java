@@ -1,5 +1,6 @@
 package fr.uge.gitclout.service;
 
+import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.Git;
 import fr.uge.gitclout.repository.CommiterRepository;
 import fr.uge.gitclout.entity.Commiter;
@@ -15,8 +16,7 @@ import java.util.Objects;
 public class CommiterService {
     private final CommiterRepository commiterRepository;
 
-    @Autowired
-    public CommiterService(CommiterRepository commiterRepository) {
+    public CommiterService(@NotNull CommiterRepository commiterRepository) {
         this.commiterRepository = commiterRepository;
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api") // requête POST
+@RequestMapping("/api/commits") // requête POST
 public class CommitController {
 
     @Autowired
@@ -23,7 +23,7 @@ public class CommitController {
         return commitService.findAll();
     }
 
-    @PostMapping("/commits/{commiterId}")
+    @PostMapping("/{commiterId}")
     public ResponseEntity<Commit> addCommit(@PathVariable Long commiterId, @RequestBody Commit commit) throws URISyntaxException {
         Commit newCommit = commitService.addCommit(commitService.createCommitWithCommiter(commiterId, commit));
         return ResponseEntity.created(new URI("/api/commits/" + newCommit.getId())).body(newCommit);

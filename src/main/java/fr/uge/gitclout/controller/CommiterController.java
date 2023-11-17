@@ -26,7 +26,7 @@ public class CommiterController {
         return commiterService.findAll();
     }
 
-    @PostMapping
+    @PostMapping("/{commiterId}")
     public ResponseEntity<Commiter> addCommiter(@RequestBody Commiter commiter) throws URISyntaxException {
         Commiter newCommiter = commiterService.addCommiter(commiter);
         return ResponseEntity.created(new URI("/api/commiters/" + newCommiter.getId())).body(newCommiter);

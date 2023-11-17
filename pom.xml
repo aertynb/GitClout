@@ -20,6 +20,7 @@
 		<java.version>21</java.version>
 		<node.version>v20.9.0</node.version>
 		<yarn.version>v1.22.19</yarn.version>
+		<packaging>jar</packaging>
 	</properties>
 
 	<dependencies>
@@ -101,6 +102,7 @@
 					<compilerArgs>
 						--enable-preview
 					</compilerArgs>
+					<compilerArgs>-Xlint:all</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
