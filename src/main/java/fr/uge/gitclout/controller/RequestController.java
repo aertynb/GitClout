@@ -35,19 +35,16 @@ public class RequestController {
     }
 
     @PostMapping("/data")
-    public ResponseEntity<String> getRepo(@RequestBody String link) {
+    public ResponseEntity<String> getRepo(@RequestBody String link) throws GitAPIException {
         Objects.requireNonNull(link);
         run(link);
         return ResponseEntity.ok(link);
     }
 
-    public void run(String link) {
+    public void run(String link) throws GitAPIException {
         var repo = new Cloner();
         try (var git = repo.initRepository(link)) {
             commiterService.addAllCommiter(git);
-            //commitService.addAllCommit(git);
-        } catch (GitAPIException e) {
-            throw new IllegalArgumentException("Link given is not correct : " + e);
         }
         repo.rmFiles(new File("ressources/repo"));
     }

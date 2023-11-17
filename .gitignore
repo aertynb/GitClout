@@ -1,7 +1,7 @@
 HELP.md
 ressources/
 target/
-database/
+.mvn/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

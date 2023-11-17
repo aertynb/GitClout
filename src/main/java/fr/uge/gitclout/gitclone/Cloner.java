@@ -19,6 +19,7 @@ public class Cloner {
         return Git.cloneRepository()
                 .setDirectory(directory)
                 .setURI(URI)
+                .setBare(true)
                 .call();
     }
 
@@ -28,7 +29,7 @@ public class Cloner {
             if (subfile.isDirectory()) {
                 rmFiles(subfile);
             }
-            if (!subfile.delete()) {
+                if (!subfile.delete()) {
                 throw new IllegalArgumentException();
             }
         }
