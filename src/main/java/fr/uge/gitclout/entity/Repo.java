@@ -13,21 +13,22 @@ public class Repo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long Id;
 
-    @OneToMany
-    //@NotNull
+    private String name;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @NotNull
     @JoinColumn(name = "commiter_id")
     private List<Commiter> commiters;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     //@NotNull
     @JoinColumn(name = "commits_id")
     private List<Commit> commits;
 
     protected Repo() { }
 
-    public Repo(List<Commiter> commiters, List<Commit> commits) {
-        this.commiters = commiters;
-        this.commits = commits;
+    public Repo(@NotNull String name) {
+        this.name = name;
     }
 
     public long getId() {
@@ -40,5 +41,19 @@ public class Repo {
 
     public List<Commit> getCommits() {
         return commits;
+    }
+
+    public void setCommiters(@NotNull List<Commiter> commiters) {
+        this.commiters = commiters;
+    }
+
+    @Override
+    public String toString() {
+        return "Repo{" +
+                "Id=" + Id +
+                ", name='" + name + '\'' +
+                ", commiters=" + commiters +
+                ", commits=" + commits +
+                '}';
     }
 }

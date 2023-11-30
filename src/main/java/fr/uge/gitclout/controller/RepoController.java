@@ -1,5 +1,6 @@
 package fr.uge.gitclout.controller;
 
+import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.service.RepoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -21,9 +23,14 @@ public class RepoController {
         this.repoService = repoService;
     }
 
+    @GetMapping
+    public List<Repo> getRepo() {
+        return repoService.findAll();
+    }
+
     @PostMapping
-    public ResponseEntity<Repo> addRepo(@RequestBody Repo repo) throws URISyntaxException {
-        Repo newRepo = repoService.addRepo(repo);
-        return ResponseEntity.created(new URI("/api/repo/" + newRepo.getId())).body(newRepo);
+    public ResponseEntity<Repo> addRepo(@RequestBody String name, @RequestBody List<Commiter> commiters) throws URISyntaxException {
+        Repo newRepo = repoService.addRepo(name, commiters);
+        return ResponseEntity.created(new URI("/api/repository/" + newRepo.getId())).body(newRepo);
     }
 }

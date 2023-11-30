@@ -14,9 +14,8 @@ public class Commit {
     @Column(name = "commits_id")
     private Long id;
 
-    @NotNull
     @ManyToOne
-    @JoinColumn(name = "commiter_id", nullable = false)
+    @JoinColumn(name = "commiter_id")
     private Commiter commiter;
 
     public Commit(Commiter commiter) {

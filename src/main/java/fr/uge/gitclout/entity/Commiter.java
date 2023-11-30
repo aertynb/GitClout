@@ -22,8 +22,8 @@ public class Commiter {
     @NotNull
     private String email;
 
-    @OneToMany(mappedBy = "commiter", cascade = CascadeType.ALL)
-    private List<Commit> commits = new ArrayList<>();
+    /*@OneToMany(mappedBy = "commiter", cascade = CascadeType.ALL)
+    private List<Commit> commits = new ArrayList<>();*/
 
     protected Commiter() { }
 
@@ -35,7 +35,7 @@ public class Commiter {
 
     @Override
     public String toString() {
-        return String.format("Commiter[id='%d', name='%s', Email='%s' Commits='%s']", id, name, email, commits);
+        return String.format("Commiter[id='%d', name='%s', Email='%s']", id, name, email);
     }
 
     public Long getId() {

@@ -24,7 +24,6 @@ public class RequestController {
     private final CommiterService commiterService;
     private final CommitService commitService;
     private final RepoService repoService;
-
     public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService) {
         Objects.requireNonNull(commiterService);
         Objects.requireNonNull(commitService);
@@ -45,6 +44,9 @@ public class RequestController {
         var repo = new Cloner();
         try (var git = repo.initRepository(link)) {
             commiterService.addAllCommiter(git);
+            var commiters = commiterService.findAll();
+            var repository = repoService.addRepo(link, commiters);
+            System.out.println(repository);
         }
         repo.rmFiles(new File("ressources/repo"));
     }
