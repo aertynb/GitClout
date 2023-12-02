@@ -23,7 +23,9 @@ public class RepoService {
     public Repo addRepo(String name, List<Commiter> commiters) {
         var repo = new Repo(name.split("/")[3]);
         repo = repoRepository.save(repo);
-        repo.setCommiters(commiters);
+        if (repo.getCommiters() == null) {
+            repo.setCommiters(commiters);
+        }
         return repo;
     }
 }

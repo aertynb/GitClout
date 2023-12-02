@@ -39,7 +39,7 @@ public class CommiterService {
     }
 
 
-    public void addAllCommiter(Git git) throws GitAPIException {
+    /*public void addAllCommiter(Git git) throws GitAPIException {
         Objects.requireNonNull(git);
         var set = new HashSet<Commiter>();
         for (var commit : git.log().call()) {
@@ -47,5 +47,5 @@ public class CommiterService {
             set.add(commiter);
         }
         commiterRepository.saveAll(set);
-    }
+    }*/
 }

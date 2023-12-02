@@ -5,8 +5,14 @@ import fr.uge.gitclout.gitclone.Cloner;
 import fr.uge.gitclout.service.CommitService;
 import fr.uge.gitclout.service.CommiterService;
 import fr.uge.gitclout.service.RepoService;
+import fr.uge.gitclout.service.TagService;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,32 +33,35 @@ public class RequestController {
     private final CommiterService commiterService;
     private final CommitService commitService;
     private final RepoService repoService;
-    public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService) {
-        Objects.requireNonNull(commiterService);
-        Objects.requireNonNull(commitService);
-        Objects.requireNonNull(repoService);
+    private final TagService tagService;
+
+    public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService, @NotNull TagService tagService) {
         this.commiterService = commiterService;
         this.commitService = commitService;
         this.repoService = repoService;
+        this.tagService = tagService;
     }
 
     @PostMapping("/data")
-    public ResponseEntity<String> getRepo(@RequestBody String link) throws GitAPIException {
+    public ResponseEntity<String> getRepo(@RequestBody String link) throws GitAPIException, IOException {
         Objects.requireNonNull(link);
         run(link);
         return ResponseEntity.ok(link);
     }
 
-    public void run(String link) throws GitAPIException {
+    public void run(String link) throws GitAPIException, IOException {
         var repo = new Cloner();
         try (var git = repo.initRepository(link)) {
-            for (var revCommit : git.log().call()) {
+            var revWalk = new RevWalk(git.getRepository());
+            revWalk.markStart(revWalk.parseCommit(git.getRepository().resolve("HEAD")));
+            for (var revCommit : revWalk) {
                 var commiter = commiterService.addCommiter(revCommit);
-                commitService.addCommit(commiter, revCommit);
+                var commit = commitService.addCommit(commiter, revCommit);
             }
+            tagService.addTags(git.tagList().call());
             repoService.addRepo(link, commiterService.findAll());
+
         }
-        System.out.println(commitService.findAll());
         repo.rmFiles(new File("ressources/repo"));
     }
 }
