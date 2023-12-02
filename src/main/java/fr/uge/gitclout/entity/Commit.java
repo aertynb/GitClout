@@ -14,17 +14,17 @@ public class Commit {
     @Column(name = "commits_id")
     private Long id;
 
+    @Column(name = "message")
+    private String message;
+
     @ManyToOne
     @JoinColumn(name = "commiter_id")
     private Commiter commiter;
 
-    public Commit(Commiter commiter) {
-        Objects.requireNonNull(commiter);
-        this.commiter = commiter;
-    }
+    protected Commit() { }
 
-    public Commit() {
-
+    public Commit(@NotNull String message) {
+        this.message = message;
     }
 
     public Long getId() {
@@ -35,8 +35,7 @@ public class Commit {
         return commiter;
     }
 
-    public void setCommiter(Commiter commiter) {
-        Objects.requireNonNull(commiter);
+    public void setCommiter(@NotNull Commiter commiter) {
         this.commiter = commiter;
     }
 
@@ -51,5 +50,14 @@ public class Commit {
     @Override
     public int hashCode() {
         return Objects.hash(id, commiter);
+    }
+
+    @Override
+    public String toString() {
+        return "Commit{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                ", commiter=" + commiter +
+                '}';
     }
 }

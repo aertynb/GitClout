@@ -7,6 +7,8 @@ import fr.uge.gitclout.service.CommiterService;
 import fr.uge.gitclout.service.RepoService;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 @RestController
@@ -43,11 +46,13 @@ public class RequestController {
     public void run(String link) throws GitAPIException {
         var repo = new Cloner();
         try (var git = repo.initRepository(link)) {
-            commiterService.addAllCommiter(git);
-            var commiters = commiterService.findAll();
-            var repository = repoService.addRepo(link, commiters);
-            System.out.println(repository);
+            for (var revCommit : git.log().call()) {
+                var commiter = commiterService.addCommiter(revCommit);
+                commitService.addCommit(commiter, revCommit);
+            }
+            repoService.addRepo(link, commiterService.findAll());
         }
+        System.out.println(commitService.findAll());
         repo.rmFiles(new File("ressources/repo"));
     }
 }

@@ -5,9 +5,13 @@ import org.eclipse.jgit.api.Git;
 import fr.uge.gitclout.repository.CommiterRepository;
 import fr.uge.gitclout.entity.Commiter;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +26,12 @@ public class CommiterService {
 
     public Commiter addCommiter(Commiter commiter) {
         return commiterRepository.save(commiter);
+    }
+
+    public Commiter addCommiter(@NotNull RevCommit revCommit) {
+        var commiter = new Commiter(revCommit.getAuthorIdent().getName(), revCommit.getAuthorIdent().getEmailAddress());
+        var opt = commiterRepository.findOne(Example.of(commiter));
+        return opt.orElseGet(() -> commiterRepository.save(commiter));
     }
 
     public List<Commiter> findAll() {

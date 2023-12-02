@@ -7,10 +7,14 @@ import fr.uge.gitclout.repository.CommiterRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTag;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.springframework.stereotype.Service;
 import org.eclipse.jgit.api.Git;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -42,11 +46,17 @@ public class CommitService {
         return commitRepository.save(commit);
     }
 
+    public Commit addCommit(@NotNull Commiter committer, @NotNull RevCommit revCommit) {
+        var commit = commitRepository.save(new Commit(revCommit.getFullMessage()));
+        commit.setCommiter(committer);
+        return commit;
+    }
+
     List<Commiter> getAllCommiter(){
         return commiterRepository.findAll();
     }
 
-    public void addAllCommit(Git git) throws GitAPIException {
+    /*public void addAllCommit(Git git) throws GitAPIException, IOException {
         Objects.requireNonNull(git);
         var set = new HashSet<Commit>();
         for(var commit : git.log().call()) {
@@ -54,5 +64,5 @@ public class CommitService {
             set.add(newCommit);
         }
         commitRepository.saveAll(set);
-    }
+    }*/
 }
