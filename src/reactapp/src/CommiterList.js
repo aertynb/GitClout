@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Container, Table } from 'reactstrap';
 import NavBar from './NavBar';
+import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
-class CommitertList extends Component {
+class CommiterList extends Component {
 
     constructor(props) {
         super(props);
@@ -19,7 +21,14 @@ class CommitertList extends Component {
         const {commiters, isLoading} = this.state;
 
         if (isLoading) {
-            return <p>Loading...</p>;
+            return (
+            <div>
+                <NavBar />
+                <LinearProgress />
+                <p>Loading...</p>;
+                <CircularProgress disableShrink />
+            </div>
+            );
         }
 
         const commiterList = commiters.map(commiters => {
@@ -50,4 +59,4 @@ class CommitertList extends Component {
         );
     }
 }
-export default CommitertList;
+export default CommiterList;

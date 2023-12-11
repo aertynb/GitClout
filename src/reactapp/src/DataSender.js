@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import NavBar from './NavBar';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField'
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 function DataSender() {
     const [link, setLink] = useState('');
@@ -22,25 +23,26 @@ function DataSender() {
     };
 
     return (
-        <Box
-              component="form"
-              sx={{
-                '& > :not(style)': { m: 1, width: '25ch' },
-              }}
-              noValidate
-              autoComplete="off"
-            >
         <div>
             <NavBar/>
-            <TextField
-                type="text"
-                value={link}
-                onChange={e => setLink(e.target.value)}
-                placeholder="Enter a valid link"
-            />
-            <Button variant="contained" size="small" onClick={sendData}>Envoyer</Button>
+            <Box
+                component="form"
+                sx={{
+                    '& > :not(style)': { m: 1, width: '25ch' },
+                }}
+                noValidate
+                autoComplete="off"
+            >
+                <Typography variant="h4" sx={{ flexGrow: 1}}> Add a repository</Typography>
+                <TextField
+                    type="text"
+                    value={link}
+                    onChange={e => setLink(e.target.value)}
+                    placeholder="Enter a valid link"
+                />
+                <Button variant="contained" onClick={sendData}>Send</Button>
+            </Box>
         </div>
-        </Box>
     );
 }
 

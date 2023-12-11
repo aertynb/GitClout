@@ -9,10 +9,7 @@ class Home extends Component {
         return (
             <div>
                 <NavBar/>
-                <Container fluid>
-                    <Button color="link"><Link to="/clone-repo">Clone Repository</Link></Button>
-                    <Button color="link"><Link to="/commiters">Commiters</Link></Button>
-                </Container>
+                <h2>GitClout</h2>
             </div>
         );
     }
