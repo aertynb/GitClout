@@ -3,7 +3,6 @@ package fr.uge.gitclout.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
 
 @Entity
 @Table(name = "tag")
@@ -16,6 +15,8 @@ public class Tag {
 
     @NotNull(message = "Name of tag cannot be null")
     private String name;
+
+
 
     protected Tag() { }
 
