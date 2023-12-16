@@ -1,6 +1,7 @@
 package fr.uge.gitclout.controller;
 
 
+import fr.uge.gitclout.gitclone.Cloner;
 import fr.uge.gitclout.service.CommitService;
 import fr.uge.gitclout.service.CommiterService;
 import fr.uge.gitclout.service.RepoService;
@@ -8,7 +9,14 @@ import fr.uge.gitclout.service.TagService;
 import fr.uge.gitclout.utilities.Analyzer;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
