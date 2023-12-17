@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import WbCloudyOutlinedIcon from '@mui/icons-material/WbCloudyOutlined';
 
-const pages = ['Home', 'Commiters', 'Clone-Repo']
+const pages = ['Home', 'Commiters']
 
 export default class NavBar extends Component {
 
@@ -52,7 +52,7 @@ export default class NavBar extends Component {
                             component={Link}
                             to={"/"}
                         >
-                            <Typography variant="h5" sx={{ flexGrow: 1, color: 'white'}} component="Home">
+                            <Typography variant="h5" sx={{ flexGrow: 1, color: 'white', letterSpacing: '.3rem'}}>
                                 GitClout
                             </Typography>
                         </Button>
