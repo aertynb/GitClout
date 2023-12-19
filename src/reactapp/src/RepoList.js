@@ -3,16 +3,6 @@ import { Link } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { LinearProgress, CircularProgress } from '@mui/material';
 
-const columns = [
-    {
-        field: 'repository',
-        headerName: 'Repository',
-        width: 300,
-        renderCell: (params) => <Link to={`/repository/${params.row.id}`}>{params.row.name}</Link>
-    },
-    { field: 'tags', headerName: 'Tags', width: 300},
-];
-
 function RepoList() {
     const [repositories, setRepositories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -42,9 +32,22 @@ function RepoList() {
         );
     }
 
-    const rows = repositories.map(repo => ({
-        id: repo.id,
-        repository: repo.name,
+    const columns = [
+        {
+            field: 'name',
+            headerName: 'Repository',
+            width: 300,
+        },
+        {
+            field: 'tags',
+            headerName: 'Tags',
+            width: 300
+        },
+    ];
+
+    const rows = repositories.map(repository => ({
+        id: repository.id,
+        name: repository.name,
         tags: 'Tags 1'
     }));
 

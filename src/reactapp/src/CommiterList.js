@@ -3,6 +3,7 @@ import { Container, Table } from 'reactstrap';
 import NavBar from './NavBar';
 import LinearProgress from '@mui/material/LinearProgress';
 import CircularProgress from '@mui/material/CircularProgress';
+import { DataGrid } from '@mui/x-data-grid';
 
 class CommiterList extends Component {
 
@@ -19,6 +20,15 @@ class CommiterList extends Component {
 
     render() {
         const {commiters, isLoading} = this.state;
+        const columns = [
+            { field: 'name', headerName: "Name", width: 300},
+            { field: 'email', headerName: "Email", width: 300}
+        ];
+        const rows = commiters.map(commiter => ({
+            id: commiter.id,
+            name: commiter.name,
+            email: commiter.email,
+        }));
 
         if (isLoading) {
             return (
@@ -31,29 +41,18 @@ class CommiterList extends Component {
             );
         }
 
-        const commiterList = commiters.map(commiters => {
-            return <tr key={commiters.id}>
-                <td style={{whiteSpace: 'nowrap'}}>{commiters.name}</td>
-                <td>{commiters.email}</td>
-            </tr>
-        });
-
         return (
             <div>
                 <NavBar/>
                 <Container fluid>
                     <h3>Commiters</h3>
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th width="30%">Name</th>
-                            <th width="30%">Email</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {commiterList}
-                        </tbody>
-                    </Table>
+                    <div style= {{ margin: '20px auto', maxWidth: 'calc(100% - 60px)' }} >
+                        <DataGrid
+                            columns={columns}
+                            rows={rows}
+                            pageSize={5}
+                        />
+                    </div>
                 </Container>
             </div>
         );
