@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { DataGrid } from '@mui/x-data-grid';
-import { LinearProgress, CircularProgress } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead } from '@mui/material';
+import { LinearProgress, CircularProgress, Paper } from '@mui/material';
 
 function RepoList() {
     const [repositories, setRepositories] = useState([]);
@@ -32,33 +32,26 @@ function RepoList() {
         );
     }
 
-    const columns = [
-        {
-            field: 'name',
-            headerName: 'Repository',
-            width: 300,
-        },
-        {
-            field: 'tags',
-            headerName: 'Tags',
-            width: 300
-        },
-    ];
-
-    const rows = repositories.map(repository => ({
-        id: repository.id,
-        name: repository.name,
-        tags: 'Tags 1'
-    }));
-
     return (
         <div style={{ margin: '20px auto', maxWidth: 'calc(100% - 60px)' }}>
-            <DataGrid
-                rows={rows}
-                columns={columns}
-                pageSize={10}
-                autoHeight
-            />
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Repository</TableCell>
+                            <TableCell>Tags</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {repositories.map((repository) => (
+                            <TableRow key={repository.id} component={Link} to={`api/repository/${repository.id}`}>
+                                <TableCell component="th">{repository.name}</TableCell>
+                                <TableCell>{'Tags 1'}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     );
 }
