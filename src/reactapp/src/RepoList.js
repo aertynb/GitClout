@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead } from '@mui/material';
 import { LinearProgress, CircularProgress, Paper } from '@mui/material';
 
 function RepoList() {
     const [repositories, setRepositories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,6 +33,10 @@ function RepoList() {
         );
     }
 
+    const handleRowClick = (id) => {
+        navigate(`repository/${id}`);
+    };
+
     return (
         <div style={{ margin: '20px auto', maxWidth: 'calc(100% - 60px)' }}>
             <TableContainer component={Paper}>
@@ -44,7 +49,7 @@ function RepoList() {
                     </TableHead>
                     <TableBody>
                         {repositories.map((repository) => (
-                            <TableRow key={repository.id} component={Link} to={`api/repository/${repository.id}`}>
+                            <TableRow key={repository.id} onClick={() => handleRowClick(repository.id)} style={{ cursor: 'pointer' }}>
                                 <TableCell component="th">{repository.name}</TableCell>
                                 <TableCell>{'Tags 1'}</TableCell>
                             </TableRow>

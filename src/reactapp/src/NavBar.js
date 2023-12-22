@@ -13,8 +13,16 @@ import {
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import WbCloudyOutlinedIcon from '@mui/icons-material/WbCloudyOutlined';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const pages = ['Home', 'Commiters']
+
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+        main: '#212121'
+    },
+});
 
 export default class NavBar extends Component {
 
@@ -35,42 +43,44 @@ export default class NavBar extends Component {
     render() {
         return (
         <div>
-            <AppBar position="static">
-                 <Container maxWidth="xl">
-                     <Toolbar>
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2}}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <WbCloudyOutlinedIcon sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, fontFamily: 'monospace' }} />
-                        <Button
-                            component={Link}
-                            to={"/"}
-                        >
-                            <Typography variant="h5" sx={{ flexGrow: 1, color: 'white', letterSpacing: '.3rem'}}>
-                                GitClout
-                            </Typography>
-                        </Button>
-                        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex'} }}>
-                            {pages.map((page) => (
-                                <Button
-                                  key={page}
-                                  component={Link}
-                                  to={`/${page === 'Home' ? '' : page.toLowerCase()}`}
-                                  sx={{ my: 2, color: 'white', display: 'block' }}
-                                >
-                                    {page}
-                                </Button>
-                            ))}
-                        </Box>
-                     </Toolbar>
-                 </Container>
-            </AppBar>
+            <ThemeProvider theme={darkTheme}>
+                <AppBar position="static">
+                     <Container maxWidth="xl">
+                         <Toolbar>
+                            <IconButton
+                                size="large"
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                sx={{ mr: 2}}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <WbCloudyOutlinedIcon sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, fontFamily: 'monospace' }} />
+                            <Button
+                                component={Link}
+                                to={"/"}
+                            >
+                                <Typography variant="h5" sx={{ flexGrow: 1, color: 'white', letterSpacing: '.3rem'}}>
+                                    GitClout
+                                </Typography>
+                            </Button>
+                            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex'} }}>
+                                {pages.map((page) => (
+                                    <Button
+                                      key={page}
+                                      component={Link}
+                                      to={`/${page === 'Home' ? '' : page.toLowerCase()}`}
+                                      sx={{ my: 2, color: 'white', display: 'block' }}
+                                    >
+                                        {page}
+                                    </Button>
+                                ))}
+                            </Box>
+                         </Toolbar>
+                     </Container>
+                </AppBar>
+            </ThemeProvider>
         </div>
         );
     }

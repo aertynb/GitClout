@@ -16,6 +16,9 @@ public class RepoService {
         this.repoRepository = repoRepository;
     }
 
+    public Repo findRepoById(Long id) {
+        return repoRepository.findById(id).orElseThrow();
+    }
     public List<Repo> findAll() {
         return repoRepository.findAll();
     }

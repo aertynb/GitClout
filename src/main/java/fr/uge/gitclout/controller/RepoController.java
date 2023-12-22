@@ -3,6 +3,7 @@ package fr.uge.gitclout.controller;
 import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.service.RepoService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,12 @@ public class RepoController {
     public RepoController(RepoService repoService) {
         Objects.requireNonNull(repoService);
         this.repoService = repoService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Repo> getRepoById(@PathVariable Long id) {
+        var repo = repoService.findRepoById(id);
+        return ResponseEntity.ok().body(repo);
     }
 
     @GetMapping
