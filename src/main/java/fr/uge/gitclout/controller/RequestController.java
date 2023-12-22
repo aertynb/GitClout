@@ -1,10 +1,8 @@
 package fr.uge.gitclout.controller;
 
 
-import fr.uge.gitclout.service.CommitService;
-import fr.uge.gitclout.service.CommiterService;
-import fr.uge.gitclout.service.RepoService;
-import fr.uge.gitclout.service.TagService;
+import fr.uge.gitclout.entity.Commiter;
+import fr.uge.gitclout.service.*;
 import fr.uge.gitclout.utilities.Analyzer;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Objects;
 
 import static fr.uge.gitclout.utilities.Cloner.initRepository;
@@ -30,12 +29,15 @@ public class RequestController {
     private final CommitService commitService;
     private final RepoService repoService;
     private final TagService tagService;
+    private final ContributionService contributionService;
 
-    public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService, @NotNull TagService tagService) {
+    public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService,
+                             @NotNull TagService tagService, @NotNull ContributionService contributionService) {
         this.commiterService = commiterService;
         this.commitService = commitService;
         this.repoService = repoService;
         this.tagService = tagService;
+        this.contributionService = contributionService;
     }
 
     @PostMapping("/data")
@@ -48,17 +50,19 @@ public class RequestController {
 
     public void run(String link) throws GitAPIException, IOException {
         try (var git = initRepository(link)) {
-            var analyzer = new Analyzer(git);
             var revWalk = new RevWalk(git.getRepository());
             revWalk.markStart(revWalk.parseCommit(git.getRepository().resolve("HEAD")));
+            var commiters = new HashSet<Commiter>();
             for (var revCommit : revWalk) {
                 var commiter = commiterService.addCommiter(revCommit);
                 commitService.addCommit(commiter, revCommit);
+                commiters.add(commiter);
             }
             var refs = git.tagList().call();
-            tagService.addTags(refs);
-            repoService.addRepo(link, commiterService.findAll());
-            analyzer.analyze(refs, revWalk);
+            var tags = tagService.addTags(refs);
+            var repo = repoService.addRepo(link, commiterService.findAll());
+            /*var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
+            analyzer.analyze(refs, revWalk);*/
         }
     }
 }

@@ -55,14 +55,4 @@ public class CommitService {
     List<Commiter> getAllCommiter(){
         return commiterRepository.findAll();
     }
-
-    /*public void addAllCommit(Git git) throws GitAPIException, IOException {
-        Objects.requireNonNull(git);
-        var set = new HashSet<Commit>();
-        for(var commit : git.log().call()) {
-            var newCommit = new Commit();
-            set.add(newCommit);
-        }
-        commitRepository.saveAll(set);
-    }*/
 }

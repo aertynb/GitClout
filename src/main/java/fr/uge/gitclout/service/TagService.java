@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.lib.Ref;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,14 +18,16 @@ public class TagService {
         this.tagRepository = tag;
     }
 
-    public void addTag(@NotNull Ref tag) {
-        tagRepository.save(new Tag(tag.getName()));
+    public Tag addTag(@NotNull Ref tag) {
+        return tagRepository.save(new Tag(tag.getName(), tag.getObjectId()));
     }
 
-    public void addTags(@NotNull List<Ref> tags) {
+    public List<Tag> addTags(@NotNull List<Ref> tags) {
+        var list = new ArrayList<Tag>();
         for(var ref : tags) {
-            addTag(ref);
+            list.add(addTag(ref));
         }
+        return list;
     }
 
     public List<Tag> findAll() {
