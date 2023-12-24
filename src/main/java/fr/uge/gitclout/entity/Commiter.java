@@ -2,6 +2,10 @@ package fr.uge.gitclout.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.SQLInsert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +15,11 @@ import java.util.Objects;
 @Table(name="commiter")
 public class Commiter {
 
+    @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "commiter_id")
-    private Long id;
+    @Column(name = "commiter_id", nullable = false)
+    private Long Commiter_id;
 
     @NotNull(message = "Name of commiter cannot be null")
     private String name;
@@ -22,24 +27,38 @@ public class Commiter {
     @NotNull
     private String email;
 
-    /*@OneToMany(mappedBy = "commiter", cascade = CascadeType.ALL)
-    private List<Commit> commits = new ArrayList<>();*/
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(unique = true)
+    @Fetch(FetchMode.JOIN)
+    private Repo repository;
+
+    public Repo getRepository() {
+        return repository;
+    }
+
+    public Long getCommiter_id() {
+        return Commiter_id;
+    }
 
     protected Commiter() { }
 
-    public Commiter(String name, String email) {
-        Objects.requireNonNull(name);
+    public Commiter(@NotNull String name, @NotNull String email) {
         this.name = name;
         this.email = email;
     }
 
     @Override
     public String toString() {
-        return String.format("Commiter[id='%d', name='%s', Email='%s']", id, name, email);
+        return "Commiter{" +
+                "Commiter_id=" + Commiter_id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", repository=" + repository +
+                '}';
     }
 
     public Long getId() {
-        return id;
+        return Commiter_id;
     }
 
     public String getName() {
@@ -48,6 +67,10 @@ public class Commiter {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setRepository(@NotNull Repo repository) {
+        this.repository = repository;
     }
 
     @Override

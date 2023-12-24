@@ -22,6 +22,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -62,11 +63,6 @@ public class Analyzer {
         }
         RawText rawText = blameResult.getResultContents();
         int length = rawText.size();
-        /*for (int i = 0; i < length; i++) {
-            RevCommit commit = blameResult.getSourceCommit(i);
-            System.out.println(commit + " " + blameResult.getSourceLine(i) + " " +
-                    blameResult.getResultPath() + " " + commit.getAuthorIdent().getName() +  " : " +  rawText.getString(i));
-        }*/
         return blameCommand.call();
     }
 
@@ -99,17 +95,22 @@ public class Analyzer {
     }
 
     private void contribute(BlameResult result, DiffEntry entry) {
-        if (entry.getChangeType() == DiffEntry.ChangeType.MODIFY) {
+        var map = new HashMap<Commiter, Integer>();
+        if (entry.getChangeType() == DiffEntry.ChangeType.MODIFY || entry.getChangeType() == DiffEntry.ChangeType.ADD) {
             for (var i = 0; i < result.getResultContents().size(); i++) {
                 var commiter = getCommiterFromRevCommit(result.getSourceCommit(0));
-                contributionService.addContribution(commiter, 1); // Note pour plus tard : utilise une map et ajoute la contribution à la fin de la boucle
+                map.computeIfAbsent(commiter, __ -> 0);
+                map.computeIfPresent(commiter, (__, v) -> v + 1);
+                //contributionService.addContribution(commiter, 1); // Note pour plus tard : utilise une map et ajoute la contribution à la fin de la boucle
             }
+            map.forEach(contributionService::addContribution);
         }
     }
 
     public void analyze(@NotNull List<Ref> tags, @NotNull RevWalk revWalk) throws GitAPIException, IOException {
         try (var reader = git.getRepository().newObjectReader()) {
-            for (var i = 0; i < 1; i++) {
+            for (var i = 0; i < tags.size() - 1; i++) {
+                System.out.println(i);
                 var tags1 = createTree(reader, tags.get(i).getObjectId(), revWalk);
                 var tags2 = createTree(reader, tags.get(i+1).getObjectId(), revWalk);
                 var entries = diff(tags1, tags2);

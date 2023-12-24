@@ -2,6 +2,8 @@ package fr.uge.gitclout.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -11,18 +13,17 @@ public class Repo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long Id;
+    private long Repo_id;
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY)
     @NotNull
-    @JoinColumn(name = "commiter_id")
+    @OneToMany(cascade = {CascadeType.ALL})
+    @Fetch(FetchMode.JOIN)
     private List<Commiter> commiters;
 
     @OneToMany(fetch = FetchType.LAZY)
-    //@NotNull
-    @JoinColumn(name = "commits_id")
+    @JoinColumn(name = "Commit_id")
     private List<Commit> commits;
 
     protected Repo() { }
@@ -31,8 +32,8 @@ public class Repo {
         this.name = name;
     }
 
-    public long getId() {
-        return Id;
+    public long getRepo_id() {
+        return Repo_id;
     }
 
     public String getName() { return name; }
@@ -49,10 +50,14 @@ public class Repo {
         this.commiters = commiters;
     }
 
+    public void setCommits(List<Commit> commits) {
+        this.commits = commits;
+    }
+
     @Override
     public String toString() {
         return "Repo{" +
-                "Id=" + Id +
+                "Id=" + Repo_id +
                 ", name='" + name + '\'' +
                 ", commiters=" + commiters +
                 ", commits=" + commits +

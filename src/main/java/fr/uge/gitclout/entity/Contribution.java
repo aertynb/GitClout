@@ -2,6 +2,8 @@ package fr.uge.gitclout.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 
 @Entity
@@ -11,11 +13,12 @@ public class Contribution {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "commiter_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn
+    @Fetch(FetchMode.JOIN)
     private Commiter commiter;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
@@ -23,6 +26,11 @@ public class Contribution {
 
     public Contribution() {
         addedLines = 0;
+    }
+
+    public Contribution(@NotNull Commiter commiter, int addedLines) {
+        this.commiter = commiter;
+        this.addedLines = addedLines;
     }
 
     public Long getId() {

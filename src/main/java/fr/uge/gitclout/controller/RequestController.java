@@ -55,12 +55,13 @@ public class RequestController {
             var commiters = new HashSet<Commiter>();
             for (var revCommit : revWalk) {
                 var commiter = commiterService.addCommiter(revCommit);
-                commitService.addCommit(commiter, revCommit);
+                //commitService.addCommit(commiter, revCommit);
                 commiters.add(commiter);
             }
             var refs = git.tagList().call();
             var tags = tagService.addTags(refs);
-            var repo = repoService.addRepo(link, commiterService.findAll());
+            var repo = repoService.addRepo(link, commiterService.findAll(), commitService.findAll());
+            //commiterService.findAll().forEach(commiter -> commiter.setRepository(repo));
             /*var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
             analyzer.analyze(refs, revWalk);*/
         }

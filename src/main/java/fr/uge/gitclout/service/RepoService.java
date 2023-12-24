@@ -1,5 +1,6 @@
 package fr.uge.gitclout.service;
 
+import fr.uge.gitclout.entity.Commit;
 import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.repository.RepoRepository;
@@ -23,12 +24,11 @@ public class RepoService {
         return repoRepository.findAll();
     }
 
-    public Repo addRepo(String name, List<Commiter> commiters) {
+    public Repo addRepo(@NotNull String name, @NotNull List<Commiter> commiters, List<Commit> commits) {
         var repo = new Repo(name.split("/")[3]);
         repo = repoRepository.save(repo);
-        if (repo.getCommiters() == null) {
-            repo.setCommiters(commiters);
-        }
+        repo.setCommiters(commiters);
+        repo.setCommits(commits);
         return repo;
     }
 }

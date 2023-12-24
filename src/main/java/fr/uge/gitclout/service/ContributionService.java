@@ -27,16 +27,14 @@ public class ContributionService {
         return contributionRepository.findAll();
     }
 
-    public Contribution addContribution(@NotNull Commiter commiter, @NotNull int lines) {
+    public void addContribution(@NotNull Commiter commiter, @NotNull int lines) {
         var opt = checkContribution(commiter);
         if (opt.isPresent()) {
-            return updateContribution(opt.orElseThrow(), lines);
+            updateContribution(opt.orElseThrow(), lines);
+            return;
         }
-        var contribution = new Contribution();
-        contribution = contributionRepository.save(contribution);
-        contribution.setCommiter(commiter);
-        contribution.setAddedLines(lines);
-        return contribution;
+        var contribution = new Contribution(commiter, lines);
+        contributionRepository.save(contribution);
     }
 
     private Contribution updateContribution(Contribution contribution, int lines) {

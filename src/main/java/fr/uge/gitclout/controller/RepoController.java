@@ -34,10 +34,4 @@ public class RepoController {
     public List<Repo> getRepo() {
         return repoService.findAll();
     }
-
-    @PostMapping
-    public ResponseEntity<Repo> addRepo(@RequestBody String name, @RequestBody List<Commiter> commiters) throws URISyntaxException {
-        Repo newRepo = repoService.addRepo(name, commiters);
-        return ResponseEntity.created(new URI("/api/repository/" + newRepo.getId())).body(newRepo);
-    }
 }

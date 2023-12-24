@@ -26,6 +26,6 @@ public class CommitController {
     @PostMapping("/{commiterId}")
     public ResponseEntity<Commit> addCommit(@PathVariable Long commiterId, @RequestBody Commit commit) throws URISyntaxException {
         Commit newCommit = commitService.addCommit(commitService.createCommitWithCommiter(commiterId, commit));
-        return ResponseEntity.created(new URI("/api/commits/" + newCommit.getId())).body(newCommit);
+        return ResponseEntity.created(new URI("/api/commits/" + newCommit.getCommit_id())).body(newCommit);
     }
 }
