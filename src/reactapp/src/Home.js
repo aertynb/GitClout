@@ -10,10 +10,8 @@ class Home extends Component {
         return (
             <div>
                 <NavBar/>
-                <h2 style={{ textAlign: 'center'}}>GitClout</h2>
                 <br/>
                 <DataSender/>
-                <h3>List of available repositories:</h3>
                 <RepoList/>
             </div>
         );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead } from '@mui/material';
-import { LinearProgress, CircularProgress, Paper } from '@mui/material';
+import { Chip, LinearProgress, CircularProgress, Paper, Typography } from '@mui/material';
 
 function RepoList() {
     const [repositories, setRepositories] = useState([]);
@@ -39,19 +39,22 @@ function RepoList() {
 
     return (
         <div style={{ margin: '20px auto', maxWidth: 'calc(100% - 60px)' }}>
+            <Typography variant="h4" sx={{ flexGrow: 1}}>List of available repositories:</Typography>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
-                        <TableRow>
-                            <TableCell>Repository</TableCell>
-                            <TableCell>Tags</TableCell>
+                        <TableRow style={{ background: '#212121'}}>
+                            <TableCell style={{ color: 'white'}}>Repository</TableCell>
+                            <TableCell style={{ color: 'white'}}>Tags</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {repositories.map((repository) => (
                             <TableRow key={repository.id} onClick={() => handleRowClick(repository.id)} style={{ cursor: 'pointer' }}>
                                 <TableCell component="th">{repository.name}</TableCell>
-                                <TableCell>{'Tags 1'}</TableCell>
+                                <TableCell>{repository.tags.map((tag) => (
+                                    <Chip label={tag.name} variant="outlined" />
+                                ))}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

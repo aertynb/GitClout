@@ -37,7 +37,9 @@ public class Repo {
         return id;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     public List<Commiter> getCommiters() {
         return commiters;
@@ -45,6 +47,10 @@ public class Repo {
 
     public List<Commit> getCommits() {
         return commits;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
     }
 
     public void setCommiters(@NotNull List<Commiter> commiters) {
