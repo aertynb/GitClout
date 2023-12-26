@@ -39,8 +39,12 @@ public class CommitService {
         return commitRepository.save(commit);
     }
 
-    public void addCommit(@NotNull Commiter committer, @NotNull RevCommit revCommit, @NotNull Repo repository) {
-        commitRepository.save(new Commit(revCommit.getFullMessage(), committer, repository));
+    public Commit addCommit(@NotNull Commiter committer, @NotNull RevCommit revCommit, @NotNull Repo repository) {
+        return new Commit(revCommit.getFullMessage(), committer, repository);
+    }
+
+    public void saveAll(@NotNull List<Commit> commits) {
+        commitRepository.saveAll(commits);
     }
 
     List<Commiter> getAllCommiter(){

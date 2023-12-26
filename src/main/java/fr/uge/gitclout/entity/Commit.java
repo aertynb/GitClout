@@ -17,7 +17,7 @@ public class Commit {
     private String message;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn
     private Commiter commiter;
 

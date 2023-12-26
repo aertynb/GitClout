@@ -20,8 +20,7 @@ class DisplayRepository extends Component {
     }
 
     getData = () => {
-        const { id } = this.state;
-        axios.get('http://localhost:8080/repository/${id}')
+        axios.get('http://localhost:8080/api/repository/1')
              .then(response => {
                 console.log("RÉUSSI", response.data);
                 this.setState({

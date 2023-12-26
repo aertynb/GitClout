@@ -20,7 +20,7 @@ public class TagService {
     }
 
     public Tag addTag(@NotNull Ref tag, @NotNull Repo repository) {
-        return tagRepository.save(new Tag(tag.getName(), tag.getObjectId(), repository));
+        return new Tag(tag.getName(), tag.getObjectId(), repository);
     }
 
     public List<Tag> addTags(@NotNull List<Ref> tags, @NotNull Repo repository) {
@@ -29,6 +29,10 @@ public class TagService {
             list.add(addTag(ref, repository));
         }
         return list;
+    }
+
+    public void saveAll(@NotNull List<Tag> tags) {
+        tagRepository.saveAll(tags);
     }
 
     public List<Tag> findAll() {

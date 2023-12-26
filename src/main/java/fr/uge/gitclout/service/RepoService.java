@@ -23,8 +23,13 @@ public class RepoService {
     }
 
     public Repo addRepo(@NotNull String name) {
-        var repo = new Repo(name.split("/")[3]);
+        /*var repo = new Repo(name.split("/")[3]);
         repo = repoRepository.save(repo);
-        return repo;
+        return repo;*/
+        return new Repo(name.split("/")[3]);
+    }
+
+    public Repo save(@NotNull Repo repo) {
+        return repoRepository.save(repo);
     }
 }

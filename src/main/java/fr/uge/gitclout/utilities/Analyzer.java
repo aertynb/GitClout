@@ -1,6 +1,7 @@
 package fr.uge.gitclout.utilities;
 
 import fr.uge.gitclout.entity.Commiter;
+import fr.uge.gitclout.entity.Contribution;
 import fr.uge.gitclout.entity.Tag;
 import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.service.ContributionService;
@@ -21,18 +22,21 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class Analyzer {
     private final Git git;
     private final Repo repo;
     private final List<Tag> tags;
-    private final List<Commiter> commiters;
+    private final HashSet<Commiter> commiters;
     private final ContributionService contributionService;
+    private final List<Contribution> contributions = new ArrayList<>();
 
     public Analyzer(@NotNull Git git, @NotNull Repo repo, @NotNull List<Tag> tags,
-                    @NotNull List<Commiter> commiters, @NotNull ContributionService contributionService) {
+                    @NotNull HashSet<Commiter> commiters, @NotNull ContributionService contributionService) {
         this.git = git;
         this.repo = repo;
         this.tags = tags;
@@ -59,8 +63,6 @@ public class Analyzer {
         if (blameResult == null) {
             return null;
         }
-        RawText rawText = blameResult.getResultContents();
-        int length = rawText.size();
         return blameCommand.call();
     }
 
@@ -100,11 +102,11 @@ public class Analyzer {
                 map.computeIfAbsent(commiter, __ -> 0);
                 map.computeIfPresent(commiter, (__, v) -> v + 1);
             }
-            map.forEach(contributionService::addContribution);
+            map.forEach((k, v) -> contributions.add(contributionService.addContribution(k, v)));
         }
     }
 
-    public void analyze(@NotNull List<Ref> tags, @NotNull RevWalk revWalk) throws GitAPIException, IOException {
+    public List<Contribution> analyze(@NotNull List<Ref> tags, @NotNull RevWalk revWalk) throws GitAPIException, IOException {
         try (var reader = git.getRepository().newObjectReader()) {
             for (var i = 0; i < tags.size() - 1; i++) {
                 var tags1 = createTree(reader, tags.get(i).getObjectId(), revWalk);
@@ -118,5 +120,6 @@ public class Analyzer {
                 }
             }
         }
+        return contributions;
     }
 }

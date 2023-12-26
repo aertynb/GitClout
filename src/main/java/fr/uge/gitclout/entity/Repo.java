@@ -11,7 +11,7 @@ public class Repo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long Repo_id;
+    private long id;
 
     private String name;
 
@@ -33,8 +33,8 @@ public class Repo {
         this.name = name;
     }
 
-    public long getRepo_id() {
-        return Repo_id;
+    public long getId() {
+        return id;
     }
 
     public String getName() { return name; }
@@ -62,7 +62,7 @@ public class Repo {
     @Override
     public String toString() {
         return "Repo{" +
-                "Repo_id=" + Repo_id +
+                "Repo_id=" + id +
                 ", name='" + name + '\'' +
                 ", commiters=" + commiters +
                 ", commits=" + commits +
