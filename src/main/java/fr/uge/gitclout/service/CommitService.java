@@ -2,22 +2,15 @@ package fr.uge.gitclout.service;
 
 import fr.uge.gitclout.entity.Commit;
 import fr.uge.gitclout.entity.Commiter;
+import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.repository.CommitRepository;
 import fr.uge.gitclout.repository.CommiterRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevTag;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.springframework.stereotype.Service;
-import org.eclipse.jgit.api.Git;
 
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 
 @Service
@@ -46,8 +39,8 @@ public class CommitService {
         return commitRepository.save(commit);
     }
 
-    public void addCommit(@NotNull Commiter committer, @NotNull RevCommit revCommit) {
-        commitRepository.save(new Commit(revCommit.getFullMessage(), committer));
+    public void addCommit(@NotNull Commiter committer, @NotNull RevCommit revCommit, @NotNull Repo repository) {
+        commitRepository.save(new Commit(revCommit.getFullMessage(), committer, repository));
     }
 
     List<Commiter> getAllCommiter(){

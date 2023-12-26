@@ -1,5 +1,6 @@
 package fr.uge.gitclout.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.lib.ObjectId;
@@ -11,22 +12,26 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "tag_id")
     private Long id;
 
     @NotNull
-    @Column(name = "taf_objectid")
     private ObjectId objId;
 
     @NotNull(message = "Name of tag cannot be null")
-    @Column(name = "tag_name")
     private String name;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Repo repository;
+
 
     protected Tag() { }
 
-    public Tag(@NotNull String name, @NotNull ObjectId objId) {
+    public Tag(@NotNull String name, @NotNull ObjectId objId, @NotNull Repo repository) {
         this.name = name;
         this.objId = objId;
+        this.repository = repository;
     }
 
     public Long getId() {
@@ -47,6 +52,7 @@ public class Tag {
                 "id=" + id +
                 ", objId=" + objId +
                 ", name='" + name + '\'' +
+                ", repository=" + repository.getName() +
                 '}';
     }
 }

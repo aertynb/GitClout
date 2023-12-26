@@ -2,8 +2,6 @@ package fr.uge.gitclout.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -18,13 +16,16 @@ public class Repo {
     private String name;
 
     @NotNull
-    @OneToMany(cascade = {CascadeType.ALL})
-    @Fetch(FetchMode.JOIN)
+    @OneToMany(mappedBy = "repository", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Commiter> commiters;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Commit_id")
+    @NotNull
+    @OneToMany(mappedBy = "repository", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Commit> commits;
+
+    @NotNull
+    @OneToMany(mappedBy = "repository", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Tag> tags;
 
     protected Repo() { }
 
@@ -50,6 +51,10 @@ public class Repo {
         this.commiters = commiters;
     }
 
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
     public void setCommits(List<Commit> commits) {
         this.commits = commits;
     }
@@ -57,10 +62,11 @@ public class Repo {
     @Override
     public String toString() {
         return "Repo{" +
-                "Id=" + Repo_id +
+                "Repo_id=" + Repo_id +
                 ", name='" + name + '\'' +
                 ", commiters=" + commiters +
                 ", commits=" + commits +
+                ", tags=" + tags +
                 '}';
     }
 }

@@ -1,14 +1,8 @@
 package fr.uge.gitclout.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLInsert;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -27,9 +21,9 @@ public class Commiter {
     @NotNull
     private String email;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(unique = true)
-    @Fetch(FetchMode.JOIN)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private Repo repository;
 
     public Repo getRepository() {
@@ -42,9 +36,10 @@ public class Commiter {
 
     protected Commiter() { }
 
-    public Commiter(@NotNull String name, @NotNull String email) {
+    public Commiter(@NotNull String name, @NotNull String email, @NotNull Repo repository) {
         this.name = name;
         this.email = email;
+        this.repository = repository;
     }
 
     @Override
@@ -53,7 +48,7 @@ public class Commiter {
                 "Commiter_id=" + Commiter_id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", repository=" + repository +
+                ", repository=" + repository.getName() +
                 '}';
     }
 

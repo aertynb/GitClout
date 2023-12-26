@@ -1,5 +1,6 @@
 package fr.uge.gitclout.service;
 
+import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.entity.Tag;
 import fr.uge.gitclout.repository.TagRepository;
 import jakarta.validation.constraints.NotNull;
@@ -18,14 +19,14 @@ public class TagService {
         this.tagRepository = tag;
     }
 
-    public Tag addTag(@NotNull Ref tag) {
-        return tagRepository.save(new Tag(tag.getName(), tag.getObjectId()));
+    public Tag addTag(@NotNull Ref tag, @NotNull Repo repository) {
+        return tagRepository.save(new Tag(tag.getName(), tag.getObjectId(), repository));
     }
 
-    public List<Tag> addTags(@NotNull List<Ref> tags) {
+    public List<Tag> addTags(@NotNull List<Ref> tags, @NotNull Repo repository) {
         var list = new ArrayList<Tag>();
         for(var ref : tags) {
-            list.add(addTag(ref));
+            list.add(addTag(ref, repository));
         }
         return list;
     }

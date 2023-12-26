@@ -1,9 +1,8 @@
 package fr.uge.gitclout.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.util.Objects;
 
@@ -17,16 +16,22 @@ public class Commit {
 
     private String message;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    @Fetch(FetchMode.JOIN)
     private Commiter commiter;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Repo repository;
 
     protected Commit() { }
 
-    public Commit(@NotNull String message, @NotNull Commiter commiter) {
+    public Commit(@NotNull String message, @NotNull Commiter commiter, @NotNull Repo repository) {
         this.message = message;
         this.commiter = commiter;
+        this.repository = repository;
     }
 
     public Long getCommit_id() {
