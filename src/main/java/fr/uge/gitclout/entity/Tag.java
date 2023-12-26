@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.lib.ObjectId;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "tag")
@@ -24,6 +26,9 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Repo repository;
+
+    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Contribution> contributions;
 
 
     protected Tag() { }

@@ -2,6 +2,7 @@ package fr.uge.gitclout.controller;
 
 
 import fr.uge.gitclout.service.*;
+import fr.uge.gitclout.utilities.Analyzer;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -26,13 +27,15 @@ public class RequestController {
     private final CommitService commitService;
     private final RepoService repoService;
     private final TagService tagService;
+    private final ContributionService contributionService;
 
     public RequestController(@NotNull CommiterService commiterService, @NotNull CommitService commitService, @NotNull RepoService repoService,
-                             @NotNull TagService tagService) {
+                             @NotNull TagService tagService, @NotNull ContributionService contributionService) {
         this.commiterService = commiterService;
         this.commitService = commitService;
         this.repoService = repoService;
         this.tagService = tagService;
+        this.contributionService = contributionService;
     }
 
     @PostMapping("/data")
@@ -57,9 +60,8 @@ public class RequestController {
             repo.setCommiters(commiterService.findAll());
             repo.setCommits(commitService.findAll());
             repo.setTags(tags);
-            //commiterService.findAll().forEach(commiter -> commiter.setRepository(repo));
-            /*var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
-            analyzer.analyze(refs, revWalk);*/
+            var analyzer = new Analyzer(git, repo, tags, commiterService.findAll(), contributionService);
+            analyzer.analyze(refs, revWalk);
         }
     }
 }

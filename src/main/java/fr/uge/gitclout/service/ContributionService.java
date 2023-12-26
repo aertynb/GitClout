@@ -33,12 +33,11 @@ public class ContributionService {
             updateContribution(opt.orElseThrow(), lines);
             return;
         }
-        var contribution = new Contribution(commiter, lines);
-        contributionRepository.save(contribution);
+        var contribution = contributionRepository.save(new Contribution(commiter, lines));
+        commiter.addContribution(contribution);
     }
 
-    private Contribution updateContribution(Contribution contribution, int lines) {
+    private void updateContribution(Contribution contribution, int lines) {
         contribution.setAddedLines(lines);
-        return contribution;
     }
 }

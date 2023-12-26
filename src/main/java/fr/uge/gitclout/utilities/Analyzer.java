@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.attributes.Attribute;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -23,18 +22,17 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class Analyzer {
     private final Git git;
     private final Repo repo;
     private final List<Tag> tags;
-    private final HashSet<Commiter> commiters;
+    private final List<Commiter> commiters;
     private final ContributionService contributionService;
 
     public Analyzer(@NotNull Git git, @NotNull Repo repo, @NotNull List<Tag> tags,
-                    @NotNull HashSet<Commiter> commiters, @NotNull ContributionService contributionService) {
+                    @NotNull List<Commiter> commiters, @NotNull ContributionService contributionService) {
         this.git = git;
         this.repo = repo;
         this.tags = tags;
@@ -54,7 +52,7 @@ public class Analyzer {
         return tree;
     }
 
-    private BlameResult blaming(String filePath) throws IOException, GitAPIException {
+    private BlameResult blaming(String filePath) throws GitAPIException {
         BlameCommand blameCommand = new BlameCommand(git.getRepository());
         blameCommand.setFilePath(filePath);
         var blameResult = blameCommand.call();
@@ -101,7 +99,6 @@ public class Analyzer {
                 var commiter = getCommiterFromRevCommit(result.getSourceCommit(0));
                 map.computeIfAbsent(commiter, __ -> 0);
                 map.computeIfPresent(commiter, (__, v) -> v + 1);
-                //contributionService.addContribution(commiter, 1); // Note pour plus tard : utilise une map et ajoute la contribution à la fin de la boucle
             }
             map.forEach(contributionService::addContribution);
         }
@@ -110,7 +107,6 @@ public class Analyzer {
     public void analyze(@NotNull List<Ref> tags, @NotNull RevWalk revWalk) throws GitAPIException, IOException {
         try (var reader = git.getRepository().newObjectReader()) {
             for (var i = 0; i < tags.size() - 1; i++) {
-                System.out.println(i);
                 var tags1 = createTree(reader, tags.get(i).getObjectId(), revWalk);
                 var tags2 = createTree(reader, tags.get(i+1).getObjectId(), revWalk);
                 var entries = diff(tags1, tags2);
@@ -120,7 +116,6 @@ public class Analyzer {
                         contribute(result, entry);
                     }
                 }
-                System.out.println(contributionService.findAll());
             }
         }
     }

@@ -3,6 +3,9 @@ package fr.uge.gitclout.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -26,6 +29,9 @@ public class Commiter {
     @JoinColumn
     private Repo repository;
 
+    @OneToMany(mappedBy = "commiter", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Contribution> contributions;
+
     public Repo getRepository() {
         return repository;
     }
@@ -40,6 +46,7 @@ public class Commiter {
         this.name = name;
         this.email = email;
         this.repository = repository;
+        contributions = new ArrayList<>();
     }
 
     @Override
@@ -66,6 +73,10 @@ public class Commiter {
 
     public void setRepository(@NotNull Repo repository) {
         this.repository = repository;
+    }
+
+    public void addContribution(Contribution contribution) {
+        contributions.add(contribution);
     }
 
     @Override

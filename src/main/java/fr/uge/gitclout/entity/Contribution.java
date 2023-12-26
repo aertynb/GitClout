@@ -13,13 +13,12 @@ public class Contribution {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    @Fetch(FetchMode.JOIN)
     private Commiter commiter;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private Tag tag;
 
     private int addedLines;
@@ -65,8 +64,8 @@ public class Contribution {
     public String toString() {
         return "Contribution{" +
                 "id=" + id +
-                ", commiter=" + commiter +
-                ", tag=" + tag +
+                ", commiter=" + commiter.getName() +
+                ", tag=" + "null" +
                 ", addedLines=" + addedLines +
                 '}';
     }
