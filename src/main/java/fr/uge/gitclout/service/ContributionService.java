@@ -2,6 +2,7 @@ package fr.uge.gitclout.service;
 
 import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Contribution;
+import fr.uge.gitclout.entity.Tag;
 import fr.uge.gitclout.repository.ContributionRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,8 @@ public class ContributionService {
         return contributionRepository.findAll();
     }
 
-    public Contribution addContribution(Commiter commiter, @NotNull int lines) {
-        //var opt = checkContribution(commiter);
-        /*if (opt.isPresent()) {
-            updateContribution(opt.orElseThrow(), lines);
-            return;
-        }*/
-        var contribution = new Contribution(commiter, lines);
+    public Contribution addContribution(Commiter commiter, @NotNull int lines, @NotNull Tag tag) {
+        var contribution = new Contribution(commiter, lines, tag);
         commiter.addContribution(contribution);
         return contribution;
     }

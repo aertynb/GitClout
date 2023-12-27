@@ -17,7 +17,7 @@ public class Contribution {
     @JoinColumn
     private Commiter commiter;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Tag tag;
 
@@ -27,9 +27,10 @@ public class Contribution {
         addedLines = 0;
     }
 
-    public Contribution(@NotNull Commiter commiter, int addedLines) {
+    public Contribution(@NotNull Commiter commiter, int addedLines, @NotNull Tag tag) {
         this.commiter = commiter;
         this.addedLines = addedLines;
+        this.tag = tag;
     }
 
     public Long getId() {

@@ -49,8 +49,8 @@ public class RequestController {
         return ResponseEntity.ok(link);
     }
 
-    private void saveInDB(@NotNull Repo repo, @NotNull HashSet<Commiter> commiters, @NotNull List<Commit> commits, @NotNull List<Tag> tags
-                          /*@NotNull List<Contribution> contributions*/) {
+    private void saveInDB(@NotNull Repo repo, @NotNull HashSet<Commiter> commiters, @NotNull List<Commit> commits, @NotNull List<Tag> tags,
+                          @NotNull List<Contribution> contributions) {
         repo = repoService.save(repo);
         commitService.saveAll(commits);
         commiterService.saveAll(commiters);
@@ -62,6 +62,7 @@ public class RequestController {
 
     public void run(@NotNull String link) throws GitAPIException, IOException {
         try (var git = initRepository(link)) {
+            var start = System.currentTimeMillis();
             var repo = repoService.addRepo(link);
             var revWalk = new RevWalk(git.getRepository());
             revWalk.markStart(revWalk.parseCommit(git.getRepository().resolve("HEAD")));
@@ -74,9 +75,12 @@ public class RequestController {
             }
             var refs = git.tagList().call();
             var tags = tagService.addTags(refs, repo);
-            /*var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
-            var contributions = analyzer.analyze(refs, revWalk);*/
-            saveInDB(repo, commiters, commits, tags /*contributions*/);
+            var end = System.currentTimeMillis();
+            System.out.println("time for parse in ms : " + (end - start));
+            var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
+            var contributions = analyzer.analyze(refs, revWalk);
+            saveInDB(repo, commiters, commits, tags, contributions);
+            System.out.println(contributionService.findAll());
         }
     }
 }
