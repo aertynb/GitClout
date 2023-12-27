@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.lib.ObjectId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,6 +38,7 @@ public class Tag {
         this.name = name;
         this.objId = objId;
         this.repository = repository;
+        contributions = new ArrayList<>();
     }
 
     public Long getId() {
@@ -51,13 +53,18 @@ public class Tag {
         return objId;
     }
 
+    public void addContributions(@NotNull Contribution contribution) {
+        contributions.add(contribution);
+    }
+
     @Override
     public String toString() {
         return "Tag{" +
                 "id=" + id +
                 ", objId=" + objId +
                 ", name='" + name + '\'' +
-                ", repository=" + repository.getName() +
+                ", repository=" + repository +
+                ", contributions=" + contributions +
                 '}';
     }
 }

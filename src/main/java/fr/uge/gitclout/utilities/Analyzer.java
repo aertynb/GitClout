@@ -27,6 +27,7 @@ public class Analyzer {
     private final HashSet<Commiter> commiters;
     private final List<Contribution> contributions = new ArrayList<>();
     private final ContributionService contributionService;
+    private final List<BlameResult> cache = new ArrayList<>();
 
     public Analyzer(@NotNull Git git, @NotNull Repo repo, @NotNull List<Tag> tags,
                     @NotNull HashSet<Commiter> commiters, @NotNull ContributionService contributionService) {
@@ -51,6 +52,10 @@ public class Analyzer {
     private BlameResult blaming(String filePath) throws GitAPIException {
         BlameCommand blameCommand = new BlameCommand(git.getRepository());
         blameCommand.setFilePath(filePath);
+        if (!cache.isEmpty()) {
+            var elt = cache.getFirst();
+            blameCommand.setStartCommit(elt.getSourceCommit(0));
+        }
         return blameCommand.call();
     }
 
@@ -85,8 +90,17 @@ public class Analyzer {
     private void analyzeTree(@NotNull CanonicalTreeParser tags1, @NotNull CanonicalTreeParser tags2, int index) throws IOException, GitAPIException {
         var entries = diff(tags1, tags2);
         for (var entry : entries) {
-            var result = blaming(entry.getOldPath());
+            //System.out.println(entry);
+            BlameResult result = null;
+            switch (entry.getChangeType()) {
+                case MODIFY -> {
+                    result = blaming(entry.getNewPath());
+                }
+                case ADD, COPY, RENAME -> result = blaming(entry.getNewPath());
+                case DELETE -> result = blaming(entry.getOldPath());
+            }
             if (result != null) {
+                cache.add(0, result);
                 contribute(result, entry, index);
             }
         }

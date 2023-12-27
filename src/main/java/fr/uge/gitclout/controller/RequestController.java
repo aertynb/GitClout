@@ -80,7 +80,7 @@ public class RequestController {
             var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
             var contributions = analyzer.analyze(refs, revWalk);
             saveInDB(repo, commiters, commits, tags, contributions);
-            System.out.println(contributionService.findAll());
+            System.out.println(contributions);
         }
     }
 }

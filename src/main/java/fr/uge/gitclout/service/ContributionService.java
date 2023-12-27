@@ -31,6 +31,7 @@ public class ContributionService {
     public Contribution addContribution(Commiter commiter, @NotNull int lines, @NotNull Tag tag) {
         var contribution = new Contribution(commiter, lines, tag);
         commiter.addContribution(contribution);
+        tag.addContributions(contribution);
         return contribution;
     }
 

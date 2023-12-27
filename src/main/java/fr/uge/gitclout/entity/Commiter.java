@@ -75,7 +75,7 @@ public class Commiter {
         this.repository = repository;
     }
 
-    public void addContribution(Contribution contribution) {
+    public void addContribution(@NotNull Contribution contribution) {
         contributions.add(contribution);
     }
 

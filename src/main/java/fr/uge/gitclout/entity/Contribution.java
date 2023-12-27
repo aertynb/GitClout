@@ -66,7 +66,7 @@ public class Contribution {
         return "Contribution{" +
                 "id=" + id +
                 ", commiter=" + commiter.getName() +
-                ", tag=" + "null" +
+                ", tag=" + tag.getName() +
                 ", addedLines=" + addedLines +
                 '}';
     }
