@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Paper, Typography, Box } from '@mui/material';
+import { Chip, Paper, Typography, Box } from '@mui/material';
 import NavBar from './NavBar';
 import { LinearProgress, CircularProgress } from '@mui/material';
+import LocalOffer from '@mui/icons-material/LocalOffer';
 
 class DisplayRepository extends Component {
     constructor(props) {
@@ -24,7 +25,7 @@ class DisplayRepository extends Component {
              .then(response => {
                 console.log("RÉUSSI", response.data);
                 this.setState({
-                    tags: [],
+                    tags: response.data.tags,
                     contributors: [],
                 });
              })
@@ -33,14 +34,33 @@ class DisplayRepository extends Component {
              });
     };
 
+    firstSectionStyle = {
+        overflowX: 'auto',
+        padding: '200px',
+    };
+
+    handleTagClick = (tag) => {
+        this.setState({ selectedTag: tag });
+        console.log("Tag sélectionné : ", tag);
+    };
+
     render() {
+        const {tags} = this.state;
         return (
             <div>
                 <NavBar />
-                <Paper>
-                    <Typography variant="h4">DisplayRepository Details</Typography>
+                <Typography variant="h4" style={{ textAlign: 'center'}}>asm</Typography>
+                <br/>
+                <div style={this.firstSectionStyle}>
                     <Typography variant="h6">Tags:</Typography>
-                </Paper>
+                    <Paper style={{ overflow: 'hidden', padding: '8px' }}>
+                            <div style={{ overflowX: 'auto', display: 'flex', alignItems: 'center', padding: '4px'}}>
+                                {tags.map((tag) => (
+                                    <Chip icon={<LocalOffer />} key={tag.id} label={tag.name} style={{ margin: '0 4px'}} onClick={() => this.handleTagClick(tag)} />
+                                ))}
+                            </div>
+                    </Paper>
+                </div>
             </div>
         );
     }
