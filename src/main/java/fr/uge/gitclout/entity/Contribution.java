@@ -1,5 +1,6 @@
 package fr.uge.gitclout.entity;
 
+import fr.uge.gitclout.utilities.Language;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Fetch;
@@ -23,14 +24,17 @@ public class Contribution {
 
     private int addedLines;
 
+    private Language language;
+
     public Contribution() {
         addedLines = 0;
     }
 
-    public Contribution(@NotNull Commiter commiter, int addedLines, @NotNull Tag tag) {
+    public Contribution(@NotNull Commiter commiter, int addedLines, @NotNull Tag tag, @NotNull Language language) {
         this.commiter = commiter;
         this.addedLines = addedLines;
         this.tag = tag;
+        this.language = language;
     }
 
     public Long getId() {
@@ -68,6 +72,7 @@ public class Contribution {
                 ", commiter=" + commiter.getName() +
                 ", tag=" + tag.getName() +
                 ", addedLines=" + addedLines +
+                ", language=" + language +
                 '}';
     }
 }

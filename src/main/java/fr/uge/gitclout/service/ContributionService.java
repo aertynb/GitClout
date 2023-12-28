@@ -4,6 +4,7 @@ import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Contribution;
 import fr.uge.gitclout.entity.Tag;
 import fr.uge.gitclout.repository.ContributionRepository;
+import fr.uge.gitclout.utilities.Language;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -28,18 +29,10 @@ public class ContributionService {
         return contributionRepository.findAll();
     }
 
-    public Contribution addContribution(Commiter commiter, @NotNull int lines, @NotNull Tag tag) {
-        var contribution = new Contribution(commiter, lines, tag);
+    public Contribution addContribution(@NotNull Commiter commiter, @NotNull int lines, @NotNull Tag tag, @NotNull Language language) {
+        var contribution = new Contribution(commiter, lines, tag, language);
         commiter.addContribution(contribution);
         tag.addContributions(contribution);
         return contribution;
-    }
-
-    private void updateContribution(Contribution contribution, int lines) {
-        contribution.setAddedLines(lines);
-    }
-
-    public void saveAll(@NotNull List<Contribution> contributions) {
-        contributionRepository.saveAll(contributions);
     }
 }
