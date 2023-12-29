@@ -6,6 +6,7 @@ import fr.uge.gitclout.service.*;
 import fr.uge.gitclout.utilities.Analyzer;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,14 +74,14 @@ public class RequestController {
                 commiters.add(commiter);
                 commits.add(commitService.addCommit(commiter, revCommit, repo));
             }
-            var refs = git.tagList().call();
+            var refs = git.getRepository().getRefDatabase().getRefsByPrefix(Constants.R_TAGS);
             var tags = tagService.addTags(refs, repo);
             var end = System.currentTimeMillis();
             System.out.println("time for parse in ms : " + (end - start));
-            var analyzer = new Analyzer(git, repo, tags, commiters, contributionService);
-            var contributions = analyzer.analyze(refs, revWalk);
+            var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk);
+            var contributions = analyzer.analyze(revWalk);
             saveInDB(repo, commiters, commits, tags, contributions);
-            System.out.println(contributions);
+            //System.out.println(contributions);
         }
     }
 }
