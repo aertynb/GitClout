@@ -53,6 +53,10 @@ public class Tag {
         return objId;
     }
 
+    public List<Contribution> getContributions() {
+        return contributions;
+    }
+
     public void addContributions(@NotNull Contribution contribution) {
         contributions.add(contribution);
     }

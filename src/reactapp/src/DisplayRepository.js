@@ -4,6 +4,7 @@ import { Chip, Paper, Typography, Box } from '@mui/material';
 import NavBar from './NavBar';
 import { LinearProgress, CircularProgress } from '@mui/material';
 import LocalOffer from '@mui/icons-material/LocalOffer';
+import ContributionBar from './ContributionBar';
 
 class DisplayRepository extends Component {
     constructor(props) {
@@ -34,24 +35,26 @@ class DisplayRepository extends Component {
              });
     };
 
-    firstSectionStyle = {
+    sectionStyle = {
         overflowX: 'auto',
         padding: '200px',
     };
 
     handleTagClick = (tag) => {
-        this.setState({ selectedTag: tag });
-        console.log("Tag sélectionné : ", tag);
+        this.setState({ selectedTag: tag }, () => {
+            console.log("Tag sélectionné : ", this.state.selectedTag);
+            console.log("Contributions du tag sélectionné: ", this.state.selectedTag.contributions);
+        });
     };
 
     render() {
-        const {tags} = this.state;
+        const {tags, selectedTag } = this.state;
         return (
             <div>
                 <NavBar />
                 <Typography variant="h4" style={{ textAlign: 'center'}}>asm</Typography>
                 <br/>
-                <div style={this.firstSectionStyle}>
+                <div style={this.sectionStyle}>
                     <Typography variant="h6">Tags:</Typography>
                     <Paper style={{ overflow: 'hidden', padding: '8px' }}>
                             <div style={{ overflowX: 'auto', display: 'flex', alignItems: 'center', padding: '4px'}}>
@@ -60,6 +63,10 @@ class DisplayRepository extends Component {
                                 ))}
                             </div>
                     </Paper>
+                    <br/>
+                    {selectedTag ? (
+                        <ContributionBar contributions={ selectedTag.contributions } />
+                    ) : null}
                 </div>
             </div>
         );

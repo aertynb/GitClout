@@ -1,5 +1,6 @@
 package fr.uge.gitclout.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.uge.gitclout.utilities.Language;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ public class Contribution {
     @JoinColumn
     private Commiter commiter;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn
     private Tag tag;
