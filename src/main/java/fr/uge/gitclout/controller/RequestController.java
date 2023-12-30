@@ -81,7 +81,6 @@ public class RequestController {
             var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk, repo);
             var contributions = analyzer.analyze(revWalk);
             saveInDB(repo, commiters, commits, tags, contributions);
-            System.out.println(contributions);
         }
     }
 }

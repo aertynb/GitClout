@@ -5,12 +5,13 @@ import NavBar from './NavBar';
 import { LinearProgress, CircularProgress } from '@mui/material';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import ContributionBar from './ContributionBar';
+import { useParams } from 'react-router-dom';
 
 class DisplayRepository extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            idRepository: 1,
+            idRepository: props.idRepository,
             tags: [],
             contributors: [],
             selectedTag: null
@@ -22,17 +23,21 @@ class DisplayRepository extends Component {
     }
 
     getData = () => {
-        axios.get('http://localhost:8080/api/repository/1')
-             .then(response => {
+        const idRepository = window.location.pathname.split('/').pop();
+
+        console.log(idRepository)
+
+        axios.get(`http://localhost:8080/api/repository/${idRepository}`)
+            .then(response => {
                 console.log("RÉUSSI", response.data);
                 this.setState({
                     tags: response.data.tags,
                     contributors: [],
                 });
-             })
-             .catch(error => {
+            })
+            .catch(error => {
                 console.error('Erreur getData: ', error);
-             });
+            });
     };
 
     sectionStyle = {

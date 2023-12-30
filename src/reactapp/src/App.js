@@ -14,7 +14,7 @@ class App extends Component {
             <Route path='/' exact={true} element={<Home />}/>
             <Route path='/commiters' exact={true} element={<CommiterList />}/>
             <Route path='/clone-repo' exact={true} element={<DataSender />}/>
-            <Route path='/repository/:id' exact={true} element={<DisplayRepository />}/>
+            <Route path='/repository/:id' exact={true} element={<DisplayRepository/>}/>
           </Routes>
         </Router>
     )
