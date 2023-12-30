@@ -2,6 +2,7 @@ package fr.uge.gitclout.utilities;
 
 import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Contribution;
+import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.entity.Tag;
 import fr.uge.gitclout.service.ContributionService;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Analyzer {
     private final Git git;
@@ -27,14 +29,16 @@ public class Analyzer {
     private final ContributionService contributionService;
     private final HashMap<String, BlameResult> cache = new HashMap<>();
     private final RevWalk revWalk;
+    private final Repo repo;
 
     public Analyzer(@NotNull Git git, @NotNull List<Tag> tags,
-                    @NotNull HashSet<Commiter> commiters, @NotNull ContributionService contributionService, @NotNull RevWalk revWalk) {
+                    @NotNull HashSet<Commiter> commiters, @NotNull ContributionService contributionService, @NotNull RevWalk revWalk, Repo repo) {
         this.git = git;
         this.tags = tags;
         this.commiters = commiters;
         this.contributionService = contributionService;
         this.revWalk = revWalk;
+        this.repo = repo;
     }
 
     private Language getLanguageFromPath(String path) {
@@ -49,9 +53,13 @@ public class Analyzer {
         };
     }
 
-    private List<DiffEntry> diff(CanonicalTreeParser tags1, CanonicalTreeParser tags2) throws IOException {
+    private DiffFormatter createDiffFormater() {
         var df = new DiffFormatter( new ByteArrayOutputStream() );
-        df.setRepository( git.getRepository() );
+        df.setRepository(git.getRepository());
+        return df;
+    }
+
+    private List<DiffEntry> diff(@NotNull DiffFormatter df, @NotNull CanonicalTreeParser tags1, @NotNull CanonicalTreeParser tags2) throws IOException {
         return df.scan( tags1, tags2 );
     }
 
@@ -62,41 +70,34 @@ public class Analyzer {
     }
 
     private BlameResult blaming(String filePath, int index) throws GitAPIException, IOException {
+        if (cache.containsKey(filePath)) {
+            return cache.get(filePath);
+        }
         BlameCommand blameCommand = new BlameCommand(git.getRepository());
         blameCommand.setFilePath(filePath)
+                .setFollowFileRenames(true)
                 .setStartCommit(revWalk.parseCommit(tags.get(index).getObjId()));
-        return blameCommand.call();
+        var result = blameCommand.call();
+        cache.put(filePath, result);
+        return result;
     }
-
-
 
     private Commiter getCommiterFromRevCommit(@NotNull RevCommit commit) {
         return commiters.stream()
                 .filter(commiter -> commiter.getName().equals(commit.getAuthorIdent().getName()))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException(commit.getAuthorIdent().toString()));
     }
 
-    private void contributeDefault(@NotNull BlameResult result, int index, @NotNull Language language,
+    private void contributeDefault(@NotNull BlameResult result, @NotNull Language language,
                                    @NotNull HashMap<Commiter, HashMap<Language, Integer>> map) {
-        for (var i = 0; i < result.getResultContents().size(); i++) {
-            var commiter = getCommiterFromRevCommit(result.getSourceCommit(i));
-            map.putIfAbsent(commiter, new HashMap<>());
-            map.computeIfPresent(commiter, (k, m) -> {
-                m.putIfAbsent(language, 0);
-                m.computeIfPresent(language, (p, v) -> v+1);
-                return m;
-            });
-        }
-    }
-
-    private boolean containsLine(@NotNull String line, @NotNull RawText old) {
-        for (var i = 0; i < old.size(); i++) {
-            if (old.getString(i).equals(line)) {
-                return true;
+        for (var i = 0; i < result.getResultContents().size() - 1; i++) {
+            if (result.getSourceAuthor(i).getName().equals("no-author")) {
+                continue;
             }
+            var commiter = getCommiterFromRevCommit(result.getSourceCommit(i));
+            addToMap(map, commiter, language);
         }
-        return false;
     }
 
     private void addToMap(@NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull Commiter commiter,
@@ -109,22 +110,24 @@ public class Analyzer {
         });
     }
 
-    private void contributeModify(@NotNull BlameResult result, String path, @NotNull Language language,
-                                  @NotNull HashMap<Commiter, HashMap<Language, Integer>> map) throws IOException {
-        var old = cache.get(path).getResultContents();
-        for (var i = 0; i < result.getResultContents().size(); i++) {
-            var commiter = getCommiterFromRevCommit(result.getSourceCommit(i));
-            if (i < old.size()) {
-                if (!result.getResultContents().getString(i).equals(old.getString(i))) {
-                    if (!containsLine(result.getResultContents().getString(i), old)) {
-                        addToMap(map, commiter, language);
-                    }
-                }
+    private void contributeModify(@NotNull BlameResult result, @NotNull Language language,
+                                  @NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull EditList editList,
+                                  @NotNull String path, @NotNull int index) throws GitAPIException, IOException {
+        for (var edit : editList) {
+            if (edit.getType().equals(Edit.Type.DELETE)) {
+                continue;
             }
-            else {
-                if (!containsLine(result.getResultContents().getString(i), old)) {
-                    addToMap(map, commiter, language);
+            for (var i = edit.getBeginB(); i < edit.getEndB() - 1; i++) {
+
+                if (result.getResultContents().size() < edit.getEndB()) {
+                    cache.remove(path);
+                    result = blaming(path, index);
                 }
+                if (result.getSourceAuthor(i).getName().equals("no-author")) {
+                    continue;
+                }
+                var commiter = getCommiterFromRevCommit(result.getSourceCommit(i));
+                addToMap(map, commiter, language);
             }
         }
     }
@@ -137,31 +140,31 @@ public class Analyzer {
         });
     }
 
-    private void caseModify(DiffEntry entry, int index, HashMap<Commiter, HashMap<Language, Integer>> map) throws GitAPIException, IOException {
+    private void caseModify(@NotNull DiffEntry entry, int index, @NotNull HashMap<Commiter, HashMap<Language, Integer>> map,
+                            @NotNull DiffFormatter df) throws GitAPIException, IOException {
         var result = blaming(entry.getNewPath(), index);
         var language = getLanguageFromPath(entry.getNewPath());
-        contributeModify(result, entry.getNewPath(), language, map);
-        cache.put(entry.getNewPath(), result);
+        var edit = df.toFileHeader(entry).toEditList();
+        contributeModify(result, language, map, edit, entry.getNewPath(), index);
     }
 
     private void caseDefault(DiffEntry entry, int index, HashMap<Commiter, HashMap<Language, Integer>> map) throws GitAPIException, IOException {
         var result = blaming(entry.getNewPath(), index);
         var language = getLanguageFromPath(entry.getNewPath());
-        contributeDefault(result, index, language, map);
-        cache.put(entry.getNewPath(), result);
+        contributeDefault(result, language, map);
     }
 
     private void analyzeTree(@NotNull CanonicalTreeParser tags1, @NotNull CanonicalTreeParser tags2, int index) throws IOException, GitAPIException {
-        var entries = diff(tags1, tags2);
+        var df = createDiffFormater();
+        var entries = diff(df, tags1, tags2);
         var map = new HashMap<Commiter, HashMap<Language, Integer>>();
         for (var entry : entries) {
             switch (entry.getChangeType()) {
-                case MODIFY -> caseModify(entry, index, map);
+                case MODIFY -> caseModify(entry, index, map, df);
                 case ADD, COPY, RENAME -> caseDefault(entry, index, map);
                 case DELETE -> blaming(entry.getOldPath(), index);
             }
         }
-        System.out.println(tags.get(index).getName() + " ------> " + map);
         unpackMapAndAdd(map, tags.get(index));
     }
 
@@ -171,7 +174,7 @@ public class Analyzer {
             emptyTree.reset();
             var first = createTree(reader, tags.get(0).getObjId(), revWalk);
             analyzeTree(emptyTree, first, 0);
-            for (var i = 0; i < 1; i++) {
+            for (var i = 0; i < tags.size() - 1; i++) {
                 var tags1 = createTree(reader, tags.get(i).getObjId(), revWalk);
                 var tags2 = createTree(reader, tags.get(i+1).getObjId(), revWalk);
                 analyzeTree(tags1, tags2, i+1);

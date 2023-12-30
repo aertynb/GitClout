@@ -70,18 +70,18 @@ public class RequestController {
             var commiters = new HashSet<Commiter>();
             var commits = new ArrayList<Commit>();
             for (var revCommit : revWalk) {
-                var commiter = commiterService.addCommiter(revCommit, repo);
+                var commiter = new Commiter(revCommit.getAuthorIdent().getName(), revCommit.getAuthorIdent().getEmailAddress(), repo);
                 commiters.add(commiter);
-                commits.add(commitService.addCommit(commiter, revCommit, repo));
+                commits.add(new Commit(revCommit.getFullMessage(), commiter, repo));
             }
             var refs = git.getRepository().getRefDatabase().getRefsByPrefix(Constants.R_TAGS);
             var tags = tagService.addTags(refs, repo);
             var end = System.currentTimeMillis();
             System.out.println("time for parse in ms : " + (end - start));
-            var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk);
+            var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk, repo);
             var contributions = analyzer.analyze(revWalk);
             saveInDB(repo, commiters, commits, tags, contributions);
-            //System.out.println(contributions);
+            System.out.println(contributions);
         }
     }
 }
