@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
+import SendIcon from '@mui/icons-material/Send';
 
 function DataSender() {
     const [link, setLink] = useState('');
@@ -61,7 +62,7 @@ function DataSender() {
                     onChange={e => setLink(e.target.value)}
                     placeholder="Enter a valid link"
                 />
-                <Button variant="contained" onClick={sendData}>Send</Button>
+                <Button variant="contained" onClick={sendData} endIcon={<SendIcon />}>Send</Button>
                 {loading && (
                     <div>
                         <LinearProgress />

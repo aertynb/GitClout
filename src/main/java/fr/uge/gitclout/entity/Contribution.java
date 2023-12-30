@@ -55,6 +55,10 @@ public class Contribution {
         return addedLines;
     }
 
+    public Language getLanguage() {
+        return language;
+    }
+
     public void setCommiter(@NotNull Commiter commiter) {
         this.commiter = commiter;
     }
