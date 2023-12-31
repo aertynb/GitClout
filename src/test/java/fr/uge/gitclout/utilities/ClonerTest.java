@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -24,6 +26,7 @@ public class ClonerTest {
         if (git != null) {
             git.close();
         }
+        Cloner.rmFiles(new File("ressources/repo"));
     }
 
     @Test
