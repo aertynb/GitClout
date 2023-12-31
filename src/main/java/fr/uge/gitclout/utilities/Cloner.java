@@ -22,7 +22,7 @@ public class Cloner {
      * @return A Git object representing the cloned repository.
      * @throws GitAPIException If an error occurs during Git operations.
      */
-    static public Git initRepository(@NotNull String URI) throws GitAPIException, IOException {
+    static public Git initRepository(@NotNull String URI) throws GitAPIException {
         var array = URI.split("/");
         var name = array[array.length - 2]; // git name
         File directory = new File("ressources/repo/" + name);
@@ -41,7 +41,7 @@ public class Cloner {
      *
      * @param directory The directory whose contents need to be removed.
      */
-    static public void rmFiles(@NotNull File directory) throws IOException {
+    static public void rmFiles(@NotNull File directory) {
         for (var subfile : Objects.requireNonNull(directory.listFiles())) {
             if (subfile.isDirectory()) {
                 rmFiles(subfile); // Recursively remove subdirectory contents

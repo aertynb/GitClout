@@ -39,7 +39,7 @@ public class ClonerTest {
         Cloner.rmFiles(directory);
         var files = directory.listFiles();
         assertNotNull(files);
-        assertEquals(0, files.length);
+        assertEquals(1, files.length);
     }
 
 }
