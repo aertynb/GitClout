@@ -94,9 +94,8 @@
 					<source>21</source>
 					<target>21</target>
 					<compilerArgs>
-						--enable-preview
+						<arg>-Xlint:all</arg>
 					</compilerArgs>
-					<compilerArgs>-Xlint:all</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>

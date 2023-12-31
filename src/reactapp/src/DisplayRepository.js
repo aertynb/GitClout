@@ -2,10 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Chip, Paper, Typography, Box } from '@mui/material';
 import NavBar from './NavBar';
-import { LinearProgress, CircularProgress } from '@mui/material';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import ContributionBar from './ContributionBar';
-import { useParams } from 'react-router-dom';
 
 class DisplayRepository extends Component {
     constructor(props) {

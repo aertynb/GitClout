@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import { Box, MenuItem, Stack, TextField, Typography } from '@mui/material';
-import { BarChart, ChartsXAxis, ChartsYAxis, ChartsTooltip } from '@mui/x-charts';
+import { BarChart, ChartsTooltip } from '@mui/x-charts';
 
 function ContributionBar({ contributions }) {
     const availableMode = ['total lines', 'code lines', 'build files', 'CI files', 'resource files', 'documentation files'];
