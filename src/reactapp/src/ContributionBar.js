@@ -3,7 +3,7 @@ import { Box, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { BarChart, ChartsTooltip } from '@mui/x-charts';
 
 function ContributionBar({ contributions }) {
-    const availableMode = ['total lines', 'code lines', 'build files', 'CI files', 'resource files', 'documentation files'];
+    const availableMode = ['total lines', 'code lines'];
     const [mode, setMode] = useState('total lines');
     const languages = ['JAVA', 'PYTHON', 'JAVASCRIPT', 'TYPESCRIPT', 'CSHARP', 'OTHER'];
     let data = [];
@@ -35,8 +35,10 @@ function ContributionBar({ contributions }) {
             }
         });
         getSeries = [{ data: data.map(e => e.addedLines)}];
-    } else if (mode === 'code lines') {
+    } else {
         seriesX = [];
+        console.log("contributions :", contributions);
+        console.log("contribut :", contributions[0]);
         data = languages.map(l => ({ data: [], stack: 'total', label: l}) );
         let tabCommiter = [];
         contributions.forEach(contribution => {
@@ -58,29 +60,6 @@ function ContributionBar({ contributions }) {
             }
         });
         getSeries = data;
-    } else {
-        return (
-            <div>
-                <Typography variant="h6">Contributions:</Typography>
-                <Box width='250px'>
-                    <TextField
-                        id="mode-select"
-                        select
-                        label="mode"
-                        value={mode}
-                        onChange={(event) => setMode(event.target.value)}
-                        fullWidth
-                    >
-                        {availableMode.map((item) => (
-                            <MenuItem value={item}>
-                                {item}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </Box>
-                <Typography>In development</Typography>
-            </div>
-        );
     }
 
     return (
