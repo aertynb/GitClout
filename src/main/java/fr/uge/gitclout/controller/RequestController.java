@@ -4,6 +4,9 @@ package fr.uge.gitclout.controller;
 import fr.uge.gitclout.entity.*;
 import fr.uge.gitclout.service.*;
 import fr.uge.gitclout.utilities.Analyzer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -26,7 +29,6 @@ import static fr.uge.gitclout.utilities.Cloner.rmFiles;
 @RestController
 @RequestMapping("clone-repo")
 public class RequestController {
-
     private final CommiterService commiterService;
     private final CommitService commitService;
     private final RepoService repoService;
@@ -43,6 +45,12 @@ public class RequestController {
     }
 
     @PostMapping("/data")
+    @Operation(summary = "Clone and store repository data",
+            description = "Clones a repository from the provided link, analyzes its commits, tags, and contributors, and stores the data in the database.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Repository data processed and stored successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
     public ResponseEntity<String> getRepo(@RequestBody @NotNull String link) throws GitAPIException, IOException {
         try (var git = initRepository(link)) {
             if (repoService.contains(link.split("/")[3], git.tagList().call().size())) {
@@ -73,7 +81,7 @@ public class RequestController {
         return revWalk;
     }
 
-    public void run(@NotNull String link, @NotNull Git git) throws GitAPIException, IOException {
+    private void run(@NotNull String link, @NotNull Git git) throws GitAPIException, IOException {
         var repo = new Repo(link.split("/")[3]);
         var revWalk = createRevWalk(git.getRepository());
         var commiters = new HashSet<Commiter>();
@@ -84,7 +92,7 @@ public class RequestController {
             commits.add(new Commit(revCommit.getFullMessage(), commiter, repo));
         }
         var tags = tagService.addTags(git.getRepository().getRefDatabase().getRefsByPrefix(Constants.R_TAGS), repo);
-        var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk, repo);
+        var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk);
         saveInDB(repo, commiters, commits, tags, analyzer.analyze(revWalk));
     }
 }

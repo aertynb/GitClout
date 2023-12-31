@@ -2,7 +2,6 @@ package fr.uge.gitclout.utilities;
 
 import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Contribution;
-import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.entity.Tag;
 import fr.uge.gitclout.service.ContributionService;
 import jakarta.validation.constraints.NotNull;
@@ -19,7 +18,6 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Analyzer {
     private final Git git;
@@ -29,16 +27,14 @@ public class Analyzer {
     private final ContributionService contributionService;
     private final HashMap<String, BlameResult> cache = new HashMap<>();
     private final RevWalk revWalk;
-    private final Repo repo;
 
-    public Analyzer(@NotNull Git git, @NotNull List<Tag> tags,
-                    @NotNull HashSet<Commiter> commiters, @NotNull ContributionService contributionService, @NotNull RevWalk revWalk, Repo repo) {
+    public Analyzer(@NotNull Git git, @NotNull List<Tag> tags,@NotNull HashSet<Commiter> commiters,
+                    @NotNull ContributionService contributionService, @NotNull RevWalk revWalk) {
         this.git = git;
         this.tags = tags;
         this.commiters = commiters;
         this.contributionService = contributionService;
         this.revWalk = revWalk;
-        this.repo = repo;
     }
 
     private Language getLanguageFromPath(String path) {
@@ -133,11 +129,8 @@ public class Analyzer {
     }
 
     private void unpackMapAndAdd(@NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull Tag tag) {
-        map.forEach((commiter, map2) -> {
-            map2.forEach((language, integer) -> {
-                contributions.add(contributionService.addContribution(commiter, integer, tag, language));
-            });
-        });
+        map.forEach((commiter, map2) -> map2.forEach((language, integer) -> contributions
+                .add(contributionService.addContribution(commiter, integer, tag, language))));
     }
 
     private void caseModify(@NotNull DiffEntry entry, int index, @NotNull HashMap<Commiter, HashMap<Language, Integer>> map,
@@ -172,7 +165,7 @@ public class Analyzer {
         try (var reader = git.getRepository().newObjectReader()) {
             var emptyTree = new CanonicalTreeParser();
             emptyTree.reset();
-            var first = createTree(reader, tags.get(0).getObjId(), revWalk);
+            var first = createTree(reader, tags.getFirst().getObjId(), revWalk);
             analyzeTree(emptyTree, first, 0);
             for (var i = 0; i < tags.size() - 1; i++) {
                 var tags1 = createTree(reader, tags.get(i).getObjId(), revWalk);
