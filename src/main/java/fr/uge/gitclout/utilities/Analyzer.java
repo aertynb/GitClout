@@ -37,6 +37,7 @@ public class Analyzer {
         this.revWalk = revWalk;
     }
 
+    // Method to retrieve language from file path
     private Language getLanguageFromPath(String path) {
         var split = path.split("\\.");
         var last = List.of(split).getLast();
@@ -49,22 +50,26 @@ public class Analyzer {
         };
     }
 
+    // Method to create a DiffFormatter object
     private DiffFormatter createDiffFormater() {
         var df = new DiffFormatter( new ByteArrayOutputStream() );
         df.setRepository(git.getRepository());
         return df;
     }
 
+    // Method to compute differences between two trees
     private List<DiffEntry> diff(@NotNull DiffFormatter df, @NotNull CanonicalTreeParser tags1, @NotNull CanonicalTreeParser tags2) throws IOException {
         return df.scan( tags1, tags2 );
     }
 
+    // Method to create a tree
     private CanonicalTreeParser createTree(ObjectReader reader, ObjectId id, RevWalk revWalk) throws IOException {
         CanonicalTreeParser tree = new CanonicalTreeParser();
         tree.reset(reader, revWalk.parseTree(id));
         return tree;
     }
 
+    // Method to retrieve BlameResult on a file
     private BlameResult blaming(String filePath, int index) throws GitAPIException, IOException {
         if (cache.containsKey(filePath)) {
             return cache.get(filePath);
@@ -78,6 +83,7 @@ public class Analyzer {
         return result;
     }
 
+    // Method to obtain Commiter from RevCommit
     private Commiter getCommiterFromRevCommit(@NotNull RevCommit commit) {
         return commiters.stream()
                 .filter(commiter -> commiter.getName().equals(commit.getAuthorIdent().getName()))
@@ -85,6 +91,7 @@ public class Analyzer {
                 .orElseThrow(() -> new IllegalArgumentException(commit.getAuthorIdent().toString()));
     }
 
+    // Method to default contribute to languages in a BlameResult
     private void contributeDefault(@NotNull BlameResult result, @NotNull Language language,
                                    @NotNull HashMap<Commiter, HashMap<Language, Integer>> map) {
         for (var i = 0; i < result.getResultContents().size() - 1; i++) {
@@ -96,6 +103,7 @@ public class Analyzer {
         }
     }
 
+    // Method to add an entry to the Contribution Map by Commiter and language
     private void addToMap(@NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull Commiter commiter,
                           @NotNull Language language) {
         map.putIfAbsent(commiter, new HashMap<>());
@@ -106,6 +114,7 @@ public class Analyzer {
         });
     }
 
+    // Method to contribute modifications in a BlameResult
     private void contributeModify(@NotNull BlameResult result, @NotNull Language language,
                                   @NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull EditList editList,
                                   @NotNull String path, @NotNull int index) throws GitAPIException, IOException {
@@ -128,11 +137,13 @@ public class Analyzer {
         }
     }
 
+    // Method to unpack the Map and add contributions
     private void unpackMapAndAdd(@NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull Tag tag) {
         map.forEach((commiter, map2) -> map2.forEach((language, integer) -> contributions
                 .add(contributionService.addContribution(commiter, integer, tag, language))));
     }
 
+    // Method for the case where a modification is detected in a DiffEntry
     private void caseModify(@NotNull DiffEntry entry, int index, @NotNull HashMap<Commiter, HashMap<Language, Integer>> map,
                             @NotNull DiffFormatter df) throws GitAPIException, IOException {
         var result = blaming(entry.getNewPath(), index);
@@ -141,12 +152,14 @@ public class Analyzer {
         contributeModify(result, language, map, edit, entry.getNewPath(), index);
     }
 
+    // Method for the case where no modification is detected in a DiffEntry
     private void caseDefault(DiffEntry entry, int index, HashMap<Commiter, HashMap<Language, Integer>> map) throws GitAPIException, IOException {
         var result = blaming(entry.getNewPath(), index);
         var language = getLanguageFromPath(entry.getNewPath());
         contributeDefault(result, language, map);
     }
 
+    // Method to analyze differences between trees and compute contributions
     private void analyzeTree(@NotNull CanonicalTreeParser tags1, @NotNull CanonicalTreeParser tags2, int index) throws IOException, GitAPIException {
         var df = createDiffFormater();
         var entries = diff(df, tags1, tags2);
@@ -161,6 +174,14 @@ public class Analyzer {
         unpackMapAndAdd(map, tags.get(index));
     }
 
+    /**
+     * Analyzes commit differences to compute contributions.
+     *
+     * @param revWalk The RevWalk containing the commits to be analyzed.
+     * @return A list of computed contributions.
+     * @throws GitAPIException In case of error accessing Git API.
+     * @throws IOException     In case of input/output error.
+     */
     public List<Contribution> analyze(@NotNull RevWalk revWalk) throws GitAPIException, IOException {
         try (var reader = git.getRepository().newObjectReader()) {
             var emptyTree = new CanonicalTreeParser();

@@ -55,11 +55,6 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -83,6 +78,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>10.1.12</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -94,7 +95,10 @@
 					<source>21</source>
 					<target>21</target>
 					<compilerArgs>
-						<arg>-Xlint:all</arg>
+						--enable-preview
+					</compilerArgs>
+					<compilerArgs>
+						--enable-preview
 					</compilerArgs>
 				</configuration>
 			</plugin>

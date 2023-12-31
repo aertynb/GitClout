@@ -4,50 +4,53 @@ import fr.uge.gitclout.entity.Commit;
 import fr.uge.gitclout.entity.Commiter;
 import fr.uge.gitclout.entity.Repo;
 import fr.uge.gitclout.repository.CommitRepository;
-import fr.uge.gitclout.repository.CommiterRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class CommitService {
 
-    private CommitRepository commitRepository;
+    private final CommitRepository commitRepository;
 
-    private CommiterRepository commiterRepository;
-
-    public CommitService(@NotNull CommitRepository commitRepository, @NotNull CommiterRepository commiterRepository) {
+    /**
+     * Constructs a CommitService with the provided CommitRepository.
+     *
+     * @param commitRepository The repository for Commits.
+     */
+    public CommitService(@NotNull CommitRepository commitRepository) {
         this.commitRepository = commitRepository;
-        this.commiterRepository = commiterRepository;
     }
 
+    /**
+     * Retrieves all Commits from the repository.
+     *
+     * @return A list of all Commits.
+     */
     public List<Commit> findAll() {
         return commitRepository.findAll();
     }
 
-    public Commit addCommit(Commit commit) {
-        return commitRepository.save(commit);
-    }
-
-    public Commit createCommitWithCommiter(Long idCommiter, Commit commit) {
-        Commiter commiter = commiterRepository.findById(idCommiter).orElseThrow(() -> new EntityNotFoundException("Commiter not found"));
-        commit.setCommiter(commiter);
-        return commitRepository.save(commit);
-    }
-
+    /**
+     * Adds a Commit to the repository.
+     *
+     * @param committer  The Commiter associated with the Commit.
+     * @param revCommit  The RevCommit containing Commit information.
+     * @param repository The Repo associated with the Commit.
+     * @return The added Commit.
+     */
     public Commit addCommit(@NotNull Commiter committer, @NotNull RevCommit revCommit, @NotNull Repo repository) {
-        return new Commit(revCommit.getFullMessage(), committer, repository);
+        return commitRepository.save(new Commit(revCommit.getFullMessage(), committer, repository));
     }
 
+    /**
+     * Saves a list of Commits into the repository.
+     *
+     * @param commits The list of Commits to be saved.
+     */
     public void saveAll(@NotNull List<Commit> commits) {
         commitRepository.saveAll(commits);
-    }
-
-    List<Commiter> getAllCommiter(){
-        return commiterRepository.findAll();
     }
 }
