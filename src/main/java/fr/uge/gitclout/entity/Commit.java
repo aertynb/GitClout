@@ -73,7 +73,9 @@ public class Commit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Commit commit = (Commit) o;
-        return Objects.equals(Commit_id, commit.Commit_id) && Objects.equals(commiter, commit.commiter);
+        return Objects.equals(Commit_id, commit.Commit_id)
+                && Objects.equals(message, commit.message)
+                && Objects.equals(commiter, commit.commiter);
     }
 
     /**
