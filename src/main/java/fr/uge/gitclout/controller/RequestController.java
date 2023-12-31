@@ -54,6 +54,7 @@ public class RequestController {
     public ResponseEntity<String> getRepo(@RequestBody @NotNull String link) throws GitAPIException, IOException {
         try (var git = initRepository(link)) {
             if (repoService.contains(link.split("/")[3], git.tagList().call().size())) {
+                rmFiles(new File("ressources/repo"));
                 return ResponseEntity.ok("Repository already in DB");
             }
             run(link, git);
