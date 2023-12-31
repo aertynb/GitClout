@@ -119,20 +119,17 @@ public class Analyzer {
                                   @NotNull HashMap<Commiter, HashMap<Language, Integer>> map, @NotNull EditList editList,
                                   @NotNull String path, @NotNull int index) throws GitAPIException, IOException {
         for (var edit : editList) {
-            if (edit.getType().equals(Edit.Type.DELETE)) {
-                continue;
-            }
-            for (var i = edit.getBeginB(); i < edit.getEndB() - 1; i++) {
-
-                if (result.getResultContents().size() < edit.getEndB()) {
-                    cache.remove(path);
-                    result = blaming(path, index);
+            if (!edit.getType().equals(Edit.Type.DELETE)) {
+                for (var i = edit.getBeginB(); i < edit.getEndB() - 1; i++) {
+                    if (result.getResultContents().size() < edit.getEndB()) {
+                        cache.remove(path);
+                        result = blaming(path, index);
+                    }
+                    if (!result.getSourceAuthor(i).getName().equals("no-author")) {
+                        var commiter = getCommiterFromRevCommit(result.getSourceCommit(i));
+                        addToMap(map, commiter, language);
+                    }
                 }
-                if (result.getSourceAuthor(i).getName().equals("no-author")) {
-                    continue;
-                }
-                var commiter = getCommiterFromRevCommit(result.getSourceCommit(i));
-                addToMap(map, commiter, language);
             }
         }
     }
