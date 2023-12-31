@@ -22,14 +22,12 @@ public class RepoService {
         return repoRepository.findAll();
     }
 
-    public Repo addRepo(@NotNull String name) {
-        /*var repo = new Repo(name.split("/")[3]);
-        repo = repoRepository.save(repo);
-        return repo;*/
-        return new Repo(name.split("/")[3]);
-    }
-
     public Repo save(@NotNull Repo repo) {
         return repoRepository.save(repo);
+    }
+
+    public boolean contains(@NotNull String name, int nbTags) {
+        return repoRepository.findAll().stream()
+                .anyMatch(repo -> repo.getName().equals(name) && repo.getTags().size() == nbTags);
     }
 }

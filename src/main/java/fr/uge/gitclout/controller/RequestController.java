@@ -5,8 +5,10 @@ import fr.uge.gitclout.entity.*;
 import fr.uge.gitclout.service.*;
 import fr.uge.gitclout.utilities.Analyzer;
 import jakarta.validation.constraints.NotNull;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,45 +44,47 @@ public class RequestController {
 
     @PostMapping("/data")
     public ResponseEntity<String> getRepo(@RequestBody @NotNull String link) throws GitAPIException, IOException {
-        var start = System.currentTimeMillis();
-        run(link);
-        var end = System.currentTimeMillis();
-        System.out.println("time in ms : " + (end - start));
-        rmFiles(new File("ressources/repo"));
+        try (var git = initRepository(link)) {
+            if (repoService.contains(link.split("/")[3], git.tagList().call().size())) {
+                return ResponseEntity.ok("Repository already in DB");
+            }
+            run(link, git);
+            rmFiles(new File("ressources/repo"));
+        }
         return ResponseEntity.ok(link);
     }
 
-    private void saveInDB(@NotNull Repo repo, @NotNull HashSet<Commiter> commiters, @NotNull List<Commit> commits, @NotNull List<Tag> tags,
+    private void saveInDB(@NotNull Repo repo, @NotNull HashSet<Commiter> commiters, @NotNull List<Commit> commits,
+                          @NotNull List<Tag> tags,
                           @NotNull List<Contribution> contributions) {
         repo = repoService.save(repo);
         commitService.saveAll(commits);
         commiterService.saveAll(commiters);
         tagService.saveAll(tags);
+        contributionService.saveAll(contributions);
         repo.setCommiters(commiterService.findAll());
         repo.setCommits(commitService.findAll());
         repo.setTags(tagService.findAll());
     }
 
-    public void run(@NotNull String link) throws GitAPIException, IOException {
-        try (var git = initRepository(link)) {
-            var start = System.currentTimeMillis();
-            var repo = repoService.addRepo(link);
-            var revWalk = new RevWalk(git.getRepository());
-            revWalk.markStart(revWalk.parseCommit(git.getRepository().resolve("HEAD")));
-            var commiters = new HashSet<Commiter>();
-            var commits = new ArrayList<Commit>();
-            for (var revCommit : revWalk) {
-                var commiter = new Commiter(revCommit.getAuthorIdent().getName(), revCommit.getAuthorIdent().getEmailAddress(), repo);
-                commiters.add(commiter);
-                commits.add(new Commit(revCommit.getFullMessage(), commiter, repo));
-            }
-            var refs = git.getRepository().getRefDatabase().getRefsByPrefix(Constants.R_TAGS);
-            var tags = tagService.addTags(refs, repo);
-            var end = System.currentTimeMillis();
-            System.out.println("time for parse in ms : " + (end - start));
-            var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk, repo);
-            var contributions = analyzer.analyze(revWalk);
-            saveInDB(repo, commiters, commits, tags, contributions);
+    private RevWalk createRevWalk(@NotNull Repository repository) throws IOException {
+        var revWalk = new RevWalk(repository);
+        revWalk.markStart(revWalk.parseCommit(repository.resolve("HEAD")));
+        return revWalk;
+    }
+
+    public void run(@NotNull String link, @NotNull Git git) throws GitAPIException, IOException {
+        var repo = new Repo(link.split("/")[3]);
+        var revWalk = createRevWalk(git.getRepository());
+        var commiters = new HashSet<Commiter>();
+        var commits = new ArrayList<Commit>();
+        for (var revCommit : revWalk) {
+            var commiter = new Commiter(revCommit.getAuthorIdent().getName(), revCommit.getAuthorIdent().getEmailAddress(), repo);
+            commiters.add(commiter);
+            commits.add(new Commit(revCommit.getFullMessage(), commiter, repo));
         }
+        var tags = tagService.addTags(git.getRepository().getRefDatabase().getRefsByPrefix(Constants.R_TAGS), repo);
+        var analyzer = new Analyzer(git, tags, commiters, contributionService, revWalk, repo);
+        saveInDB(repo, commiters, commits, tags, analyzer.analyze(revWalk));
     }
 }

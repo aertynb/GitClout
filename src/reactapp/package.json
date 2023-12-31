@@ -27,6 +27,7 @@
     "reactstrap": "^9.2.1",
     "rxjs": "^6.5.3",
     "typescript": "^5.2.2",
+    "socket.io-client": "4.7.2",
     "web-vitals": "^2.1.0",
     "zone.js": "~0.14.0"
   },

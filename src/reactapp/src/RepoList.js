@@ -8,20 +8,23 @@ function RepoList() {
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/repository');
-                const data = await response.json();
-                setRepositories(data);
-                setIsLoading(false);
-            } catch(error) {
-                console.error('Error fetching data:', error);
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
+    const fetchData = async () => {
+        try {
+          setIsLoading(true);
+          const response = await fetch('/api/repository');
+          const data = await response.json();
+          setRepositories(data);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          setIsLoading(false);
+        }
+      };
+
+      useEffect(() => {
+          fetchData();
+        }, []);
+
 
     if (isLoading) {
         return (
@@ -31,6 +34,10 @@ function RepoList() {
                 <CircularProgress disableShrink />
             </div>
         );
+    }
+
+    const handleRefresh = () => {
+        fetchData();
     }
 
     const handleRowClick = (id) => {
@@ -60,6 +67,7 @@ function RepoList() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <button onClick={handleRefresh}>Refresh</button>
         </div>
     );
 }
