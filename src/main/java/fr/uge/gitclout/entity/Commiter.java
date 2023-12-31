@@ -75,7 +75,7 @@ public class Commiter {
      *
      * @return The ID of the committer.
      */
-    public Long getId() {
+    public Long getCommiter_idId() {
         return Commiter_id;
     }
 

@@ -62,6 +62,14 @@ public class Commit {
         this.commiter = commiter;
     }
 
+    public Long getCommit_id() {
+        return Commit_id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
     /**
      * Checks if this Commit object is equal to another object based on their IDs and committers.
      *
